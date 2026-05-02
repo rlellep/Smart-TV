@@ -172,6 +172,7 @@ const Details = ({itemId, initialItem, onPlay, onSelectItem, onSelectPerson, onI
 	const [toastMessage, setToastMessage] = useState(null);
 	const [episodeRatings, setEpisodeRatings] = useState({});
 	const [logoFailed, setLogoFailed] = useState(false);
+	const [logoIsDark, setLogoIsDark] = useState(false);
 	const handleLogoError = useCallback(() => setLogoFailed(true), []);
 	const handleToastEnd = useCallback(() => setToastMessage(null), []);
 
@@ -401,6 +402,75 @@ const Details = ({itemId, initialItem, onPlay, onSelectItem, onSelectPerson, onI
 			return () => clearTimeout(timer);
 		}
 	}, [isLoading, item]);
+
+	useEffect(() => {
+		if (!item) {
+			setLogoIsDark(false);
+			return;
+		}
+
+		const url = getLogoUrl(effectiveServerUrl, item, {maxWidth: 400, quality: 90});
+		if (!url) {
+			setLogoIsDark(false);
+			return;
+		}
+
+		let cancelled = false;
+		const img = document.createElement('img');
+
+		img.onload = () => {
+			if (cancelled) return;
+			try {
+				const canvas = document.createElement('canvas');
+				const ctx = canvas.getContext('2d');
+				if (!ctx) {
+					setLogoIsDark(false);
+					return;
+				}
+
+				const sampleWidth = 64;
+				const ratio = img.width > 0 ? img.height / img.width : 1;
+				const sampleHeight = Math.max(1, Math.round(sampleWidth * ratio));
+				canvas.width = sampleWidth;
+				canvas.height = sampleHeight;
+				ctx.drawImage(img, 0, 0, sampleWidth, sampleHeight);
+				const {data} = ctx.getImageData(0, 0, sampleWidth, sampleHeight);
+
+				let darkPixels = 0;
+				let visiblePixels = 0;
+				for (let i = 0; i < data.length; i += 4) {
+					const r = data[i];
+					const g = data[i + 1];
+					const b = data[i + 2];
+					const a = data[i + 3];
+					if (a < 16) continue;
+
+					visiblePixels++;
+					const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+					if (luma < 90) darkPixels++;
+				}
+
+				if (!visiblePixels) {
+					setLogoIsDark(false);
+					return;
+				}
+
+				setLogoIsDark(darkPixels / visiblePixels > 0.55);
+			} catch {
+				setLogoIsDark(false);
+			}
+		};
+
+		img.onerror = () => {
+			if (!cancelled) setLogoIsDark(false);
+		};
+
+		img.src = url;
+
+		return () => {
+			cancelled = true;
+		};
+	}, [item, effectiveServerUrl]);
 
 	// === HANDLERS ===
 
@@ -1988,7 +2058,12 @@ const handleSectionKeyDown = useCallback((ev) => {
 							{/* Title or Logo */}
 							<div className={css.titleSection}>
 								{logoUrl && !logoFailed ? (
-									<img src={logoUrl} className={css.logoImage} alt={item.Name} onError={handleLogoError} />
+									<img
+										src={logoUrl}
+										className={`${css.logoImage} ${logoIsDark ? css.logoImageDark : css.logoImageLight}`}
+										alt={item.Name}
+										onError={handleLogoError}
+									/>
 								) : (
 									<h1 className={css.title}>{item.Name}</h1>
 								)}
