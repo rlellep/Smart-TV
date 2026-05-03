@@ -8,6 +8,11 @@ overflow: hidden;
 background: #000;
 }
 
+.pagePanel {
+position: absolute;
+background: transparent;
+}
+
 .viewContainer {
 position: absolute;
 top: 0;
@@ -43,6 +48,11 @@ display: none;
 max-width: 960px;
 margin: 0 auto;
 padding: 0 60px;
+}
+
+.pagePanel .listInner {
+	max-width: none;
+	padding: 0 24px;
 }
 
 .listItem {
@@ -89,6 +99,13 @@ height: 24px;
 .listItem:focus & {
 background: rgba(0, 164, 220, 0.15);
 }
+}
+
+.materialIconSvg {
+	width: 24px;
+	height: 24px;
+	display: block;
+	filter: brightness(0) saturate(100%) invert(47%) sepia(98%) saturate(3493%) hue-rotate(165deg) brightness(95%) contrast(101%);
 }
 
 .listItemBody {
@@ -223,6 +240,23 @@ display: flex;
 justify-content: space-between;
 align-items: center;
 margin-bottom: 12px;
+}
+
+.sliderTitleGroup {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+
+	.listItemIcon {
+		width: 40px;
+		height: 40px;
+		margin-right: 16px;
+		border-radius: 12px;
+	}
+
+	.sliderContainer:focus-within & .listItemIcon {
+		background: rgba(0, 164, 220, 0.15);
+	}
 }
 
 .sliderTitle {
