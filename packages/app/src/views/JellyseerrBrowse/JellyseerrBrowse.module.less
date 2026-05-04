@@ -55,7 +55,7 @@
 	min-height: 80px;
 	
 	.backButton {
-		background: rgba(255, 255, 255, 0.1);
+		background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.1);
 		border: none;
 		border-radius: 50%;
 		width: 56px;
@@ -69,15 +69,15 @@
 		
 		&:focus {
 			outline: none;
-			background: rgba(255, 255, 255, 0.2);
+			background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.2);
 			transform: scale(1.1);
-			box-shadow: 0 0 0 4px rgba(0, 164, 220, 0.5);
+			box-shadow: 0 0 0 4px rgba(var(--theme-accent-rgb, 0, 164, 220), 0.5);
 		}
 		
 		svg {
 			width: 28px;
 			height: 28px;
-			fill: white;
+			fill: var(--theme-text-primary, #ffffff);
 		}
 	}
 	
@@ -98,12 +98,12 @@
 	.title {
 		font-size: 38px;
 		font-weight: 600;
-		color: white;
+		color: var(--theme-text-primary, #ffffff);
 	}
 	
 	.subtitle {
 		font-size: 16px;
-		color: rgba(255, 255, 255, 0.6);
+		color: var(--theme-text-secondary, rgba(255, 255, 255, 0.6));
 		margin-top: 4px;
 	}
 }
@@ -119,11 +119,11 @@
 }
 
 .filterButton {
-	background: rgba(255, 255, 255, 0.1);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.1);
 	border: 2px solid transparent;
 	border-radius: 8px;
 	padding: 12px 20px;
-	color: white;
+	color: var(--theme-text-primary, #ffffff);
 	font-size: 16px;
 	cursor: pointer;
 	transition: all 0.2s ease;
@@ -136,8 +136,8 @@
 	
 	&:focus {
 		outline: none;
-		background: rgba(255, 255, 255, 0.2);
-		border-color: var(--accent-color, #00a4dc);
+		background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.2);
+		border-color: var(--theme-focus-border-color, #00a4dc);
 		transform: scale(1.05);
 	}
 	
@@ -184,7 +184,7 @@
 		z-index: 10;
 		
 		.poster {
-			border-color: white;
+			border-color: var(--theme-focus-border-color, #ffffff);
 		}
 	}
 }
@@ -204,7 +204,7 @@
 	border: 3px solid transparent;
 	border-radius: 8px;
 	transition: border-color 0.2s ease;
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.05);
 }
 
 .posterPlaceholder {
@@ -212,7 +212,7 @@
 	height: 100%;
 	border: 3px solid transparent;
 	border-radius: 8px;
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.05);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -228,7 +228,7 @@
 	font-weight: 700;
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
-	color: #fff;
+	color: var(--theme-on-badge, #fff);
 	z-index: 2;
 }
 
@@ -280,7 +280,7 @@
 	left: 50%;
 	width: 10px;
 	height: 2px;
-	background: #fff;
+	background: var(--theme-text-primary, #fff);
 	transform: translate(-50%, -50%);
 }
 
@@ -306,9 +306,9 @@
 	border-radius: 8px;
 	background: linear-gradient(
 		90deg,
-		rgba(255, 255, 255, 0.05) 25%,
-		rgba(255, 255, 255, 0.1) 50%,
-		rgba(255, 255, 255, 0.05) 75%
+		rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.05) 25%,
+		rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.1) 50%,
+		rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.05) 75%
 	);
 	background-size: 200% 100%;
 	animation: shimmer 1.5s infinite;
@@ -326,7 +326,7 @@
 .placeholderIcon {
 	width: 60px;
 	height: 60px;
-	fill: rgba(255, 255, 255, 0.3);
+	fill: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.3);
 }
 
 .itemInfo {
@@ -337,7 +337,7 @@
 .itemName {
 	font-size: 16px;
 	font-weight: 500;
-	color: white;
+	color: var(--theme-text-primary, #ffffff);
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -345,7 +345,7 @@
 
 .itemYear {
 	font-size: 14px;
-	color: rgba(255, 255, 255, 0.6);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.6));
 	margin-top: 4px;
 }
 
@@ -363,7 +363,7 @@
 	justify-content: center;
 	height: 100%;
 	font-size: 24px;
-	color: rgba(255, 255, 255, 0.5);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.5));
 }
 
 .popupContent {
@@ -381,7 +381,7 @@
 .modalTitle {
 	font-size: 32px;
 	font-weight: 600;
-	color: white;
+	color: var(--theme-text-primary, #ffffff);
 	margin-bottom: 10px;
 	text-align: center;
 }
