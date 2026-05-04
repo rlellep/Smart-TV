@@ -7,9 +7,9 @@
 	right: 0;
 	bottom: 0;
 	overflow: hidden;
-	background: #1a1a2e;
-	background: -webkit-linear-gradient(315deg, #1a1a2e 0%, #16213e 100%);
-	background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+	background: var(--theme-background, #101010);
+	background: -webkit-linear-gradient(315deg, var(--theme-background, #101010) 0%, var(--theme-surface, #1a1a1a) 100%);
+	background: linear-gradient(135deg, var(--theme-background, #101010) 0%, var(--theme-surface, #1a1a1a) 100%);
 }
 
 .content {
@@ -36,13 +36,13 @@
 .libraryTitle {
 	font-size: 42px;
 	font-weight: 700;
-	color: white;
+	color: var(--theme-text-primary, white);
 	letter-spacing: -0.5px;
 }
 
 .itemCount {
 	font-size: 18px;
-	color: rgba(255, 255, 255, 0.5);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.5));
 	margin-left: 16px;
 	font-weight: 400;
 }
@@ -66,7 +66,7 @@
 	background: none;
 	border: 2px solid transparent;
 	border-radius: 6px;
-	color: rgba(255, 255, 255, 0.6);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.6));
 	font-size: 26px;
 	font-weight: 600;
 	padding: 2px 8px;
@@ -75,22 +75,22 @@
 
 	&:focus {
 		outline: none;
-		color: white;
+		color: var(--theme-text-primary, white);
 		border-color: @accent;
-		background: rgba(255, 255, 255, 0.08);
+		background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.08);
 	}
 }
 
 .breadcrumbSep {
 	font-size: 28px;
-	color: rgba(255, 255, 255, 0.3);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.3));
 	margin: 0 4px;
 }
 
 .breadcrumbCurrent {
 	font-size: 32px;
 	font-weight: 700;
-	color: white;
+	color: var(--theme-text-primary, white);
 	padding: 2px 8px;
 }
 
@@ -102,7 +102,7 @@
 	align-items: center;
 	padding: 6px 4px 2px;
 	font-size: 13px;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.7));
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -117,7 +117,7 @@
 .folderIcon {
 	width: 14px;
 	height: 14px;
-	fill: rgba(255, 255, 255, 0.5);
+	fill: var(--theme-text-muted, rgba(255, 255, 255, 0.5));
 	margin-right: 5px;
 	flex-shrink: 0;
 }
@@ -130,7 +130,7 @@
 .focusedName {
 	font-size: 22px;
 	font-weight: 600;
-	color: white;
+	color: var(--theme-text-primary, white);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -143,7 +143,7 @@
 	align-items: center;
 	margin-top: 2px;
 	font-size: 15px;
-	color: rgba(255, 255, 255, 0.5);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.5));
 }
 
 .metaItem {
@@ -161,7 +161,7 @@
 	display: inline-block;
 	width: 1px;
 	height: 14px;
-	background: rgba(255, 255, 255, 0.25);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.25);
 	margin-left: 10px;
 	margin-right: 4px;
 	vertical-align: middle;
@@ -172,7 +172,7 @@
 	align-items: center;
 	margin-left: 10px;
 	font-size: 14px;
-	color: rgba(255, 255, 255, 0.7);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.7));
 }
 
 .ratingIcon {
@@ -183,7 +183,7 @@
 }
 
 .communityStar {
-	color: #ffd700;
+	color: var(--theme-status-pending, #ffd700);
 	font-size: 16px;
 	margin-right: 4px;
 	line-height: 1;
@@ -199,7 +199,7 @@
 }
 
 .toolbarBtn {
-	background: rgba(255, 255, 255, 0.08);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.08);
 	border: 2px solid transparent;
 	border-radius: 50%;
 	width: 52px;
@@ -229,7 +229,7 @@
 .toolbarIcon {
 	width: 26px;
 	height: 26px;
-	fill: white;
+	fill: var(--theme-text-primary, white);
 }
 
 /* ── Letter Navigation ───────────────────────────────────── */
@@ -248,7 +248,7 @@
 	border: 2px solid transparent;
 	border-radius: 6px;
 	padding: 8px 11px;
-	color: rgba(255, 255, 255, 0.55);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.55));
 	font-size: 17px;
 	font-weight: 600;
 	cursor: pointer;
@@ -260,15 +260,15 @@
 
 	&:focus {
 		outline: none;
-		background: rgba(255, 255, 255, 0.15);
+		background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.15);
 		border-color: @accent;
-		color: white;
+		color: var(--theme-text-primary, white);
 		transform: scale(1.1);
 	}
 
 	&.active {
 		background: @accent;
-		color: white;
+		color: var(--theme-on-accent, white);
 	}
 }
 
@@ -332,7 +332,7 @@
 		z-index: 10;
 
 		.poster {
-			border-color: white;
+			border-color: var(--theme-focus-border-color, white);
 		}
 	}
 }
@@ -344,7 +344,7 @@
 	border: 3px solid transparent;
 	border-radius: 8px;
 	transition: border-color 0.2s ease;
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.05);
 }
 
 /* ── Badges ──────────────────────────────────────────────── */
@@ -368,7 +368,7 @@
 	svg {
 		width: 15px;
 		height: 15px;
-		fill: #e91e63;
+		fill: var(--theme-recording-active, #e91e63);
 	}
 }
 
@@ -382,7 +382,7 @@
 	height: 270px;
 	border: 3px solid transparent;
 	border-radius: 8px;
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.05);
 	display: -webkit-flex;
 	display: flex;
 	-webkit-align-items: center;
@@ -405,7 +405,7 @@
 .placeholderIcon {
 	width: 60px;
 	height: 60px;
-	fill: rgba(255, 255, 255, 0.3);
+	fill: var(--theme-text-muted, rgba(255, 255, 255, 0.3));
 }
 
 /* ── Status Bar ──────────────────────────────────────────── */
@@ -421,12 +421,12 @@
 	-webkit-flex: 1;
 	flex: 1;
 	font-size: 14px;
-	color: rgba(255, 255, 255, 0.35);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.35));
 }
 
 .statusCount {
 	font-size: 14px;
-	color: rgba(255, 255, 255, 0.35);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.35));
 }
 
 /* ── Loading / Empty states ──────────────────────────────── */
@@ -451,7 +451,7 @@
 	justify-content: center;
 	height: 100%;
 	font-size: 24px;
-	color: rgba(255, 255, 255, 0.5);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.5));
 }
 
 /* ── Sort & Filter Slide-Out Panel ───────────────────────── */
@@ -461,7 +461,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: rgba(0, 0, 0, 0.45);
+	background: rgba(var(--theme-scrim-rgb, 0, 0, 0), 0.45);
 	z-index: 100;
 	display: -webkit-flex;
 	display: flex;
@@ -472,7 +472,7 @@
 .sortPanel {
 	width: 380px;
 	height: 100%;
-	background: rgba(20, 20, 40, 0.92);
+	background: rgba(var(--theme-surface-rgb, 20, 20, 40), 0.92);
 	backdrop-filter: blur(32px) saturate(1.3);
 	-webkit-backdrop-filter: blur(32px) saturate(1.3);
 	padding: 40px 32px;
@@ -486,7 +486,7 @@
 	}
 
 	animation: slideIn 0.25s ease-out;
-	border-left: 1px solid rgba(255, 255, 255, 0.08);
+	border-left: 1px solid rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.08);
 }
 
 @keyframes slideIn {
@@ -501,7 +501,7 @@
 .sortPanelTitle {
 	font-size: 32px;
 	font-weight: 700;
-	color: white;
+	color: var(--theme-text-primary, white);
 	margin: 0 0 32px 0;
 }
 
@@ -510,14 +510,14 @@
 }
 
 .filterSection {
-	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	border-top: 1px solid rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.1);
 	padding-top: 24px;
 }
 
 .sortSectionLabel {
 	font-size: 15px;
 	font-weight: 600;
-	color: rgba(255, 255, 255, 0.45);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.45));
 	text-transform: uppercase;
 	letter-spacing: 1px;
 	margin-bottom: 16px;
@@ -534,7 +534,7 @@
 	border: 2px solid transparent;
 	border-radius: 8px;
 	padding: 14px 16px;
-	color: rgba(255, 255, 255, 0.8);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.8));
 	font-size: 18px;
 	cursor: pointer;
 	transition: all 0.15s ease;
@@ -545,13 +545,13 @@
 
 	&:focus {
 		outline: none;
-		background: rgba(255, 255, 255, 0.1);
+		background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.1);
 		border-color: @accent;
-		color: white;
+		color: var(--theme-text-primary, white);
 	}
 
 	&.sortOptionActive {
-		color: white;
+		color: var(--theme-text-primary, white);
 	}
 }
 
@@ -572,7 +572,7 @@
 	height: 22px;
 	min-width: 22px;
 	border-radius: 50%;
-	border: 2px solid rgba(255, 255, 255, 0.35);
+	border: 2px solid rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.35);
 	transition: border-color 0.15s ease;
 
 	.sortOptionActive & {
@@ -600,7 +600,7 @@
 	height: 22px;
 	min-width: 22px;
 	border-radius: 4px;
-	border: 2px solid rgba(255, 255, 255, 0.35);
+	border: 2px solid rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.35);
 	transition: all 0.15s ease;
 	background: none;
 
@@ -613,14 +613,14 @@
 .checkIcon {
 	width: 16px;
 	height: 16px;
-	fill: white;
+	fill: var(--theme-on-accent, white);
 }
 
 /* ── Settings Panel Rows ─────────────────────────────────── */
 .settingsHeader {
 	font-size: 14px;
 	font-weight: 600;
-	color: rgba(255, 255, 255, 0.4);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.4));
 	text-transform: uppercase;
 	letter-spacing: 1.5px;
 	margin-bottom: 4px;
@@ -628,7 +628,7 @@
 
 /* Music browse mode (Flutter parity) */
 .musicPage {
-	background: #101528;
+	background: var(--theme-background, #101528);
 }
 
 .musicContent {
@@ -651,7 +651,7 @@
 .musicLibraryTitle {
 	font-size: 34px;
 	font-weight: 300;
-	color: #fff;
+	color: var(--theme-text-primary, #fff);
 	text-align: center;
 }
 
@@ -666,8 +666,8 @@
 	height: 60px;
 	border-radius: 50%;
 	border: 2px solid transparent;
-	background: rgba(255, 255, 255, 0.08);
-	color: rgba(255, 255, 255, 0.9);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.08);
+	color: var(--theme-text-primary, rgba(255, 255, 255, 0.9));
 	margin: 4px 0 8px;
 	padding: 0;
 	cursor: pointer;
@@ -680,7 +680,7 @@
 
 	&:focus {
 		outline: none;
-		background: rgba(255, 255, 255, 0.2);
+		background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.2);
 		border-color: @accent;
 		-webkit-transform: scale(1.08);
 		transform: scale(1.08);
@@ -690,7 +690,7 @@
 .musicSectionTitle {
 	font-size: 18px;
 	font-weight: 600;
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--theme-text-primary, rgba(255, 255, 255, 0.9));
 	margin: 4px 0 8px 6px;
 }
 
@@ -717,8 +717,8 @@
 	min-width: 110px;
 	padding: 18px 24px 14px;
 	border: 2px solid transparent;
-	background: rgba(255, 255, 255, 0.06);
-	color: rgba(255, 255, 255, 0.88);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.06);
+	color: var(--theme-text-primary, rgba(255, 255, 255, 0.88));
 	border-radius: 14px;
 	cursor: pointer;
 	transition: transform 0.15s ease, background 0.15s ease;
@@ -736,7 +736,7 @@
 
 	&:focus {
 		outline: none;
-		background: rgba(255, 255, 255, 0.14);
+		background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.14);
 		border-color: @accent;
 		-webkit-transform: scale(1.06);
 		transform: scale(1.06);
@@ -792,11 +792,11 @@
 .settingLabel {
 	font-size: 19px;
 	font-weight: 600;
-	color: white;
+	color: var(--theme-text-primary, white);
 }
 
 .settingValue {
 	font-size: 16px;
-	color: rgba(255, 255, 255, 0.55);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.55));
 	margin-top: 4px;
 }

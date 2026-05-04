@@ -94,7 +94,10 @@ const defaultSettings = {
 	showSyncPlayButton: true,
 	stereoUpmixEnabled: false,
 	blockedRatings: [],
-	jellyseerrRows: null
+	jellyseerrRows: null,
+	focusBorderColor: '',
+	navbarOpacity: 100,
+	navbarColor: ''
 };
 
 export {DEFAULT_HOME_ROWS};
@@ -181,6 +184,9 @@ const SYNCABLE_KEYS = [
 	'uiLanguage',
 	'blockedRatings',
 	'jellyseerrRows',
+	'focusBorderColor',
+	'navbarOpacity',
+	'navbarColor',
 ];
 
 const profileToLocal = (serverProfile) => {

@@ -168,7 +168,27 @@ const AppContent = (props) => {
 		for (const [key, value] of Object.entries(vars)) {
 			root.style.setProperty(key, value);
 		}
+		if (activeTheme?.id) {
+			root.setAttribute('data-theme-id', activeTheme.id);
+		}
 	}, [activeTheme]);
+
+	useEffect(() => {
+		const root = document.documentElement;
+		if (settings.focusBorderColor) {
+			root.style.setProperty('--theme-focus-border-color', settings.focusBorderColor);
+		}
+		root.style.setProperty('--theme-navbar-opacity', ((settings.navbarOpacity ?? 100) / 100).toString());
+		if (settings.navbarColor) {
+			const hex = settings.navbarColor.replace('#', '');
+			const r = parseInt(hex.slice(0, 2), 16);
+			const g = parseInt(hex.slice(2, 4), 16);
+			const b = parseInt(hex.slice(4, 6), 16);
+			root.style.setProperty('--theme-navbar-color-rgb', `${r}, ${g}, ${b}`);
+		} else {
+			root.style.removeProperty('--theme-navbar-color-rgb');
+		}
+	}, [activeTheme, settings.focusBorderColor, settings.navbarOpacity, settings.navbarColor]);
 
 	useEffect(() => {
 		const scale = settings.uiScale || 1.0;

@@ -1,4 +1,4 @@
-import {useCallback, useState, useEffect, useMemo, useRef} from 'react';
+import {useCallback, useState, useEffect, useRef} from 'react';
 import $L from '@enact/i18n/$L';
 import Spottable from '@enact/spotlight/Spottable';
 import SpotlightContainerDecorator from '@enact/spotlight/SpotlightContainerDecorator';
@@ -259,6 +259,35 @@ const getSeasonalThemeOptions = () => [
 	{ value: 'halloween', label: $L('Halloween') }
 ];
 
+const ACCENT_COLOR_OPTIONS = [
+	{ value: '', label: $L('Theme Default') },
+	{ value: '#ffffff', label: $L('White') },
+	{ value: '#000000', label: $L('Black') },
+	{ value: '#808080', label: $L('Gray') },
+	{ value: '#003366', label: $L('Dark Blue') },
+	{ value: '#6a0dad', label: $L('Purple') },
+	{ value: '#008080', label: $L('Teal') },
+	{ value: '#000080', label: $L('Navy') },
+	{ value: '#36454f', label: $L('Charcoal') },
+	{ value: '#8b4513', label: $L('Brown') },
+	{ value: '#8b0000', label: $L('Dark Red') },
+	{ value: '#006400', label: $L('Dark Green') },
+	{ value: '#708090', label: $L('Slate') },
+	{ value: '#4b0082', label: $L('Indigo') },
+	{ value: '#00a4dc', label: $L('Moonfin Cyan') },
+	{ value: '#ff2e92', label: $L('Neon Magenta') }
+];
+
+const hexToRgba = (hex) => {
+	const clean = hex.replace('#', '');
+	const a = parseInt(clean.slice(0, 2), 16) / 255;
+	const r = parseInt(clean.slice(2, 4), 16);
+	const g = parseInt(clean.slice(4, 6), 16);
+	const b = parseInt(clean.slice(6, 8), 16);
+	if (a >= 0.999) return `rgb(${r}, ${g}, ${b})`;
+	return `rgba(${r}, ${g}, ${b}, ${a.toFixed(3)})`;
+};
+
 const AGE_RATING_OPTIONS = [
 	{ value: 0, label: 'G' },
 	{ value: 7, label: 'PG' },
@@ -292,7 +321,7 @@ const renderChevron = () => (
 
 const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 	const { api, serverUrl, accessToken, hasMultipleServers, logoutAll } = useAuth();
-	const { settings, updateSetting, resetSettings, availableThemes, activeTheme, activeThemeId, selectThemeById } = useSettings();
+	const { settings, updateSetting, resetSettings, availableThemes, activeThemeId, selectThemeById } = useSettings();
 	const { capabilities } = useDeviceInfo();
 	const jellyseerr = useJellyseerr();
 	const isSeerr = jellyseerr.isMoonfin && jellyseerr.variant === 'seerr';
@@ -331,10 +360,6 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 	const [librarySaving, setLibrarySaving] = useState(false);
 	const [serverConfigs, setServerConfigs] = useState([]);
 	const [clearDataDialogOpen, setClearDataDialogOpen] = useState(false);
-	const themeOptions = useMemo(
-		() => availableThemes.map((theme) => ({value: theme.id, label: theme.displayName})),
-		[availableThemes]
-	);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -609,24 +634,33 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</SpottableDiv>
 	);
 
-	const renderThemeItem = () => (
-		<SpottableDiv
-			className={css.listItem}
-			onClick={() => pushView({
-				view: 'options',
-				title: $L('Theme'),
-				options: themeOptions,
-				settingKey: '__themeSelection',
-				returnFocusTo: 'setting-appearance-theme'
+	const renderThemePreviewCards = () => (
+		<div className={css.themeCardList}>
+			{availableThemes.map((theme) => {
+				const isSelected = theme.id === activeThemeId;
+				const bg = hexToRgba(theme.colors.background);
+				const surface = hexToRgba(theme.colors.surface);
+				const accent = hexToRgba(theme.colors.accent);
+				const progress = hexToRgba(theme.colors.rangeProgress);
+				return (
+					<SpottableDiv
+						key={theme.id}
+						className={`${css.themeCard}${isSelected ? ` ${css.themeCardSelected}` : ''}`}
+						onClick={() => selectThemeById(theme.id)}
+						spotlightId={`theme-card-${theme.id}`}
+					>
+						<div className={css.themeCardHeader}>
+							<div className={css.themeCardName}>{theme.displayName}</div>
+							{isSelected && <div className={css.themeCardCheck}>✓</div>}
+						</div>
+						<div
+							className={css.themeCardStripe}
+							style={{background: `linear-gradient(to right, ${bg}, ${surface}, ${accent}, ${progress})`}}
+						/>
+					</SpottableDiv>
+				);
 			})}
-			spotlightId='setting-appearance-theme'
-		>
-			<div className={css.listItemBody}>
-				<div className={css.listItemHeading}>{$L('Theme')}</div>
-				<div className={css.listItemCaption}>{activeTheme.displayName}</div>
-			</div>
-			<div className={css.listItemTrailing}>{renderChevron()}</div>
-		</SpottableDiv>
+		</div>
 	);
 
 	const renderInfoItem = (id, label, value) => (
@@ -875,7 +909,8 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 
 	const renderPersonalizationGeneralStyle = () => (
 		<>
-			{renderThemeItem()}
+			{renderThemePreviewCards()}
+			{renderOptionItem('focusBorderColor', $L('Focus Border Color'), ACCENT_COLOR_OPTIONS, $L('Theme Default'))}
 			{renderOptionItem('clockDisplay', $L('Clock Display'), getClockDisplayOptions(), $L('24-Hour'))}
 			{renderMissingItem('24-hour-clock', $L('24-Hour Clock'), $L('Handled via Clock Display on Smart-TV'))}
 			{renderToggleItem('cardFocusZoom', $L('Card Focus Expansion'), $L('Slightly enlarge cards when focused'))}
@@ -892,6 +927,8 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 	const renderPersonalizationNavigation = () => (
 		<>
 			{renderOptionItem('navbarPosition', $L('Navbar Position'), getNavPositionOptions(), $L('Top Bar'))}
+			{renderSliderItem('navbarOpacity', $L('Navbar Opacity'), 0, 100, 5, (v) => `${v}%`)}
+			{renderOptionItem('navbarColor', $L('Navbar Color'), ACCENT_COLOR_OPTIONS, $L('Theme Default'))}
 			{renderToggleItem('showShuffleButton', $L('Shuffle Button'), $L('Show shuffle button in navigation bar'))}
 			{settings.showShuffleButton &&
 				renderOptionItem('shuffleContentType', $L('Shuffle Content Type'), getContentTypeOptions(), $L('Movies & TV Shows'))}

@@ -1278,6 +1278,63 @@
 		margin-bottom: 12px;
 	}
 
+
+:global(html[data-theme-id='neon_pulse']) {
+	.backdropGradient {
+		background: linear-gradient(
+			to bottom,
+			rgba(var(--theme-background-rgb, 11, 4, 32), 0.2) 0%,
+			rgba(var(--theme-surface-rgb, 30, 10, 63), 0.55) 40%,
+			var(--theme-scrim, rgba(11, 4, 32, 0.85)) 70%,
+			rgba(var(--theme-background-rgb, 11, 4, 32), 0.95) 100%
+		);
+	}
+
+	.title,
+	.seasonDetailTitle,
+	.seasonEpTitle,
+	.castName {
+		color: var(--theme-accent, #ff2e92);
+		text-shadow: var(--theme-text-glow, 0 0 8px rgba(255, 46, 146, 0.35));
+	}
+
+	.seriesName,
+	.infoItem,
+	.seasonDetailSeries,
+	.seasonEpMeta,
+	.seasonEpOverview,
+	.castRole,
+	.overview,
+	.metaValue {
+		color: var(--theme-on-surface, #00e5ff);
+	}
+
+	.episodeNumber,
+	.infoBadge {
+		background: rgba(var(--theme-on-surface-rgb, 0, 229, 255), 0.15);
+		border: 1px solid rgba(var(--theme-accent-rgb, 255, 46, 146), 0.5);
+		color: var(--theme-on-surface, #00e5ff);
+	}
+
+	.poster,
+	.seasonEp,
+	.castImageWrapper,
+	.personPhoto {
+		border-color: rgba(var(--theme-accent-rgb, 255, 46, 146), 0.45);
+		box-shadow: 0 0 14px rgba(var(--theme-accent-rgb, 255, 46, 146), 0.2);
+	}
+
+	.btnAction {
+		border: 1px solid rgba(var(--theme-accent-rgb, 255, 46, 146), 0.5);
+		box-shadow: 0 0 10px rgba(var(--theme-accent-rgb, 255, 46, 146), 0.2);
+	}
+
+	.btnLabel,
+	.btnDetail,
+	.metaLabel {
+		color: var(--theme-on-surface, #00e5ff);
+	}
+}
 	.overview {
 		max-height: 250px;
 		overflow-y: auto;

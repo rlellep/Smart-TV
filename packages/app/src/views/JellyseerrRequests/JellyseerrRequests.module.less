@@ -3,7 +3,7 @@
 	flex-direction: row;
 	align-items: center;
 	padding: 1rem;
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.05);
 	border-radius: 8px;
 	margin: 0.5rem 1rem;
 	cursor: pointer;
@@ -14,7 +14,7 @@
 	}
 
 	&:focus {
-		background: rgba(255, 255, 255, 0.15);
+		background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.15);
 		outline: 4px solid var(--theme-focus-border-color, #fff);
 		transform: scale(1.02);
 	}

@@ -564,6 +564,74 @@
 	to { opacity: 1; }
 }
 
+:global(html[data-theme-id='neon_pulse']) {
+	.audioModeBackground {
+		background: linear-gradient(
+			135deg,
+			var(--theme-background, #0b0420) 0%,
+			var(--theme-surface, #1e0a3f) 55%,
+			var(--theme-surface-variant, #1e0a3f) 100%
+		);
+	}
+
+	.audioTrackTitle,
+	.nextTitle,
+	.settingValue,
+	.sliderValue {
+		color: var(--theme-accent, #ff2e92);
+		text-shadow: var(--theme-text-glow, 0 0 8px rgba(255, 46, 146, 0.35));
+	}
+
+	.audioTrackArtist,
+	.audioTrackAlbum,
+	.nextMeta,
+	.nextLabel,
+	.modalFooter,
+	.pauseDescriptionText,
+	.settingLabel,
+	.loadingIndicator p {
+		color: var(--theme-on-surface, #00e5ff);
+	}
+
+	.progressBar,
+	.skipButton,
+	.nextPlayBtn,
+	.nextCancelBtn,
+	.offsetBtn,
+	.actionBtn,
+	.settingItem,
+	.sliderItem {
+		border-color: rgba(var(--theme-accent-rgb, 255, 46, 146), 0.55);
+		box-shadow: 0 0 10px rgba(var(--theme-accent-rgb, 255, 46, 146), 0.2);
+	}
+
+	.progressFill,
+	.nextProgressFill,
+	.spinner {
+		background: var(--theme-accent, #ff2e92);
+		border-top-color: var(--theme-accent, #ff2e92);
+	}
+
+	.progressBar:focus,
+	.skipButton:focus,
+	.nextPlayBtn:focus,
+	.nextCancelBtn:focus,
+	.offsetBtn:focus,
+	.actionBtn:focus,
+	.settingItem:focus,
+	.sliderItem:focus-within {
+		border-color: var(--theme-on-surface, #00e5ff);
+		background: rgba(var(--theme-on-surface-rgb, 0, 229, 255), 0.14);
+	}
+
+	.subtitleText {
+		color: var(--theme-on-surface, #00e5ff);
+		text-shadow:
+			0 0 2px rgba(0, 0, 0, 0.9),
+			0 0 10px rgba(var(--theme-accent-rgb, 255, 46, 146), 0.45);
+	}
+}
+
 .modalContent {
 	background: rgba(30, 30, 30, 0.98);
 	border-radius: 16px;

@@ -299,6 +299,59 @@ margin-left: 12px;
 }
 }
 
+.themeCardList {
+display: flex;
+flex-direction: column;
+gap: 4px;
+margin-bottom: 4px;
+}
+
+.themeCard {
+padding: 16px 20px;
+background: var(--theme-surface, #141414);
+border-radius: 12px;
+border: 2px solid transparent;
+cursor: pointer;
+transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+position: relative;
+
+&:focus {
+outline: none;
+background: var(--theme-surface-variant, #1e1e1e);
+border-color: var(--theme-focus-border-color, #00a4dc);
+transform: scale(1.02);
+will-change: transform;
+}
+}
+
+.themeCardSelected {
+border-color: var(--theme-focus-border-color, #00a4dc);
+}
+
+.themeCardHeader {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 12px;
+}
+
+.themeCardName {
+font-size: 18px;
+font-weight: 600;
+color: var(--theme-text-primary, #fff);
+}
+
+.themeCardCheck {
+font-size: 18px;
+font-weight: 700;
+color: var(--theme-accent, #00a4dc);
+}
+
+.themeCardStripe {
+height: 36px;
+border-radius: 8px;
+}
+
 .actionBarInline {
 padding: 8px 24px 16px;
 

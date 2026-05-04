@@ -78,7 +78,7 @@
 	font-size: 56px;
 	font-weight: 700;
 	margin: 0 0 16px 0;
-	color: #fff;
+	color: var(--theme-text-primary, #fff);
 	text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.9);
 	line-height: 1.1;
 	max-width: 70%;
@@ -92,7 +92,7 @@
 	align-items: center;
 	margin-bottom: 16px;
 	font-size: 20px;
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.9));
 
 	> * + * {
 		margin-left: 15px;
@@ -100,17 +100,17 @@
 }
 
 .detailRating {
-	color: var(--theme-status-pending, #fbbf24);
+	color: var(--theme-status-pending, #eab308);
 }
 
 .detailYear {
-	color: rgba(255, 255, 255, 0.9);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.9));
 }
 
 .detailOverview {
 	font-size: 22px;
 	line-height: 1.5;
-	color: rgba(255, 255, 255, 0.95);
+	color: var(--theme-text-primary, rgba(255, 255, 255, 0.95));
 	margin: 0;
 	text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.9);
 	display: -webkit-box;
@@ -185,7 +185,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: rgba(255, 255, 255, 0.6);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.6));
 	font-size: 18px;
 }
 
@@ -260,7 +260,7 @@
 	font-weight: 700;
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
-	color: #fff;
+	color: var(--theme-on-badge, #fff);
 	z-index: 2;
 }
 
@@ -309,7 +309,7 @@
 }
 
 .availability5 {
-	background: #fff;
+	background: var(--theme-on-surface, #fff);
 	border: 2px solid var(--theme-status-available, #22c55e);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
@@ -338,7 +338,7 @@
 	left: 50%;
 	width: 10px;
 	height: 2px;
-	background: #fff;
+	background: var(--theme-on-badge, #fff);
 	transform: translate(-50%, -50%);
 }
 
@@ -350,7 +350,7 @@
 }
 
 .availability2 {
-	background: #fff;
+	background: var(--theme-on-surface, #fff);
 	border: 2px solid var(--theme-status-pending, #eab308);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 	.clock-hands(var(--theme-status-pending, #eab308));
@@ -407,7 +407,7 @@
 .genreTitle {
 	font-size: 26px;
 	font-weight: 700;
-	color: #fff;
+	color: var(--theme-text-primary, #fff);
 	text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
 	text-align: center;
 	padding: 20px;
@@ -431,8 +431,8 @@
 	&:focus {
 		transform: scale(1.08);
 		z-index: 10;
-		border-color: #ffffff;
-		background: rgba(255, 255, 255, 0.15);
+		border-color: var(--theme-focus-border-color, #ffffff);
+		background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.15);
 		opacity: 1;
 	}
 }
@@ -470,7 +470,7 @@
 	height: calc(100% - 80px);
 	margin-top: 80px;
 	font-size: 24px;
-	color: #888;
+	color: var(--theme-text-secondary, #888);
 	text-align: center;
 
 	> * + * {
@@ -493,7 +493,7 @@
 		z-index: 10;
 
 		.requestPosterContainer {
-			border-color: #ffffff;
+			border-color: var(--theme-focus-border-color, #ffffff);
 			border-width: 4px;
 		}
 	}
@@ -530,33 +530,33 @@
 }
 
 .requestStatusPending {
-	background: rgba(234, 179, 8, 0.95);
-	color: #000;
+	background: var(--theme-status-pending, #eab308);
+	color: var(--theme-background, #000);
 }
 
 .requestStatusApproved {
-	background: rgba(59, 130, 246, 0.95);
-	color: #fff;
+	background: var(--theme-status-requested, #9333ea);
+	color: var(--theme-on-accent, #fff);
 }
 
 .requestStatusDeclined {
-	background: rgba(239, 68, 68, 0.95);
-	color: #fff;
+	background: var(--theme-recording-active, #ef4444);
+	color: var(--theme-on-accent, #fff);
 }
 
 .requestStatusAvailable {
-	background: rgba(34, 197, 94, 0.95);
-	color: #fff;
+	background: var(--theme-status-available, #22c55e);
+	color: var(--theme-on-accent, #fff);
 }
 
 .requestStatusPartial {
-	background: rgba(245, 158, 11, 0.95);
-	color: #fff;
+	background: var(--theme-status-available, #22c55e);
+	color: var(--theme-on-accent, #fff);
 }
 
 .requestStatusDownloading {
-	background: rgba(99, 102, 241, 0.95);
-	color: #fff;
+	background: var(--theme-status-downloading, #6366f1);
+	color: var(--theme-on-accent, #fff);
 }
 
 

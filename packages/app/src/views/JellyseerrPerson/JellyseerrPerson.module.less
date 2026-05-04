@@ -66,7 +66,7 @@
 	display: flex;
 	flex-direction: column;
 	font-size: 20px;
-	color: rgba(255, 255, 255, 0.8);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.8));
 
 	> * + * {
 		margin-top: 12px;
@@ -95,7 +95,7 @@
 .biographyText {
 	font-size: 20px;
 	line-height: 1.6;
-	color: rgba(255, 255, 255, 0.8);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.8));
 	margin: 0 0 16px 0;
 	display: -webkit-box;
 	-webkit-line-clamp: 6;
@@ -111,16 +111,16 @@
 .biographyToggle {
 	display: inline-block;
 	padding: 8px 16px;
-	background: rgba(255, 255, 255, 0.1);
-	border: 2px solid rgba(255, 255, 255, 0.2);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.1);
+	border: 2px solid rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.2);
 	border-radius: 8px;
 	font-size: 18px;
 	cursor: pointer;
 	transition: all 0.2s ease;
 
 	&:focus {
-		background: #ffffff;
-		color: #000;
+		background: var(--theme-on-surface, #ffffff);
+		color: var(--theme-background, #000);
 		transform: scale(1.05);
 	}
 }
@@ -203,7 +203,7 @@
 	font-weight: 700;
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
-	color: #fff;
+	color: var(--theme-on-badge, #fff);
 	z-index: 2;
 }
 
@@ -228,7 +228,7 @@
 .availability5 {
 	background: var(--theme-status-available, #22c55e);
 	border: 2px solid var(--theme-text-primary, #fff);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 1px 3px rgba(var(--theme-scrim-rgb, 0, 0, 0), 0.3);
 }
 
 .availability5::after {
@@ -244,8 +244,8 @@
 }
 
 .availability4 {
-	background: var(--theme-status-pending, #f59e0b);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+	background: var(--theme-status-pending, #eab308);
+	box-shadow: 0 1px 3px rgba(var(--theme-scrim-rgb, 0, 0, 0), 0.3);
 }
 
 .availability4::after {
@@ -255,13 +255,13 @@
 	left: 50%;
 	width: 8px;
 	height: 2px;
-	background: #fff;
+	background: var(--theme-on-badge, #fff);
 	transform: translate(-50%, -50%);
 }
 
 .availability3 {
 	background: transparent;
-	border: 2px solid var(--theme-accent, #6366f1);
+	border: 2px solid var(--theme-status-downloading, #6366f1);
 	border-top-color: transparent;
 	animation: spin 1s linear infinite;
 }
@@ -312,7 +312,7 @@
 	justify-content: center;
 	height: 100%;
 	font-size: 24px;
-	color: #888;
+	color: var(--theme-text-secondary, #888);
 	text-align: center;
 
 	> * + * {
@@ -322,16 +322,16 @@
 
 .errorButton {
 	padding: 12px 24px;
-	background: rgba(255, 255, 255, 0.1);
-	border: 2px solid rgba(255, 255, 255, 0.2);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.1);
+	border: 2px solid rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.2);
 	border-radius: 8px;
 	font-size: 18px;
 	cursor: pointer;
 	transition: all 0.2s ease;
 
 	&:focus {
-		background: #ffffff;
-		color: #000;
+		background: var(--theme-on-surface, #ffffff);
+		color: var(--theme-background, #000);
 		transform: scale(1.05);
 	}
 }

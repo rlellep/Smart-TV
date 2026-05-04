@@ -1269,3 +1269,62 @@
 		transform: scale(1.05);
 	}
 }
+
+:global(html[data-theme-id='neon_pulse']) {
+	.backdropOverlay {
+		background: linear-gradient(
+			to bottom,
+			rgba(var(--theme-background-rgb, 11, 4, 32), 0.18) 0%,
+			rgba(var(--theme-surface-rgb, 30, 10, 63), 0.65) 65%,
+			var(--theme-background, #0b0420) 100%
+		);
+	}
+
+	.mediaTitle,
+	.sectionTitle,
+	.recommendationTitle,
+	.qualityPopupTitle,
+	.cancelPopupTitle,
+	.seasonPopupTitle,
+	.advancedPopupTitle {
+		color: var(--theme-accent, #ff2e92);
+		text-shadow: var(--theme-text-glow, 0 0 8px rgba(255, 46, 146, 0.35));
+	}
+
+	.metadataRow,
+	.genresRow,
+	.tagline,
+	.overview,
+	.factValue,
+	.factLabel,
+	.qualityPopupSubtitle,
+	.cancelPopupDescription,
+	.seasonPopupSubtitle,
+	.advancedPopupSubtitle,
+	.keywordTag,
+	.seasonEpisodes {
+		color: var(--theme-on-surface, #00e5ff);
+	}
+
+	.posterImage,
+	.recommendationPoster,
+	.seasonCheckItem,
+	.qualityButton,
+	.cancelConfirmButton,
+	.cancelKeepButton,
+	.advancedConfirmButton {
+		border-color: rgba(var(--theme-accent-rgb, 255, 46, 146), 0.55);
+		box-shadow: 0 0 10px rgba(var(--theme-accent-rgb, 255, 46, 146), 0.2);
+	}
+
+	.statusBadge,
+	.mediaFacts .factRow {
+		border-color: rgba(var(--theme-accent-rgb, 255, 46, 146), 0.45);
+	}
+
+	.keywordTag,
+	.seasonItem,
+	.seasonCheckItem {
+		background: rgba(var(--theme-on-surface-rgb, 0, 229, 255), 0.12);
+	}
+}
