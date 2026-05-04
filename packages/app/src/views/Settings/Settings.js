@@ -379,6 +379,9 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 			} else if (cv.view === 'options') {
 				const idx = cv.options?.findIndex((o) => o.value === settings[cv.settingKey]);
 				Spotlight.focus(idx >= 0 ? `opt-${idx}` : 'opt-0');
+			} else if (cv.view === 'themes') {
+				const selectedId = availableThemes.find((t) => t.id === activeThemeId)?.id;
+				Spotlight.focus(selectedId ? `theme-card-${selectedId}` : 'themes-view');
 			} else if (cv.view === 'homeRows') {
 				Spotlight.focus('homerows-view');
 			} else if (cv.view === 'libraries') {
@@ -467,6 +470,10 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		jellyseerr.disable();
 		setMoonfinStatus('');
 	}, [jellyseerr]);
+
+	const openThemes = useCallback(() => {
+		pushView({ view: 'themes', returnFocusTo: 'setting-themeSelection' });
+	}, [pushView]);
 
 	const openHomeRows = useCallback(() => {
 		setTempHomeRows([...(settings.homeRows || DEFAULT_HOME_ROWS)].sort((a, b) => a.order - b.order));
@@ -909,7 +916,12 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 
 	const renderPersonalizationGeneralStyle = () => (
 		<>
-			{renderThemePreviewCards()}
+			{renderNavItem(
+				'themeSelection',
+				$L('Theme'),
+				availableThemes.find((t) => t.id === activeThemeId)?.displayName || $L('Default'),
+				openThemes
+			)}
 			{renderOptionItem('focusBorderColor', $L('Focus Border Color'), ACCENT_COLOR_OPTIONS, $L('Theme Default'))}
 			{renderOptionItem('clockDisplay', $L('Clock Display'), getClockDisplayOptions(), $L('24-Hour'))}
 			{renderMissingItem('24-hour-clock', $L('24-Hour Clock'), $L('Handled via Clock Display on Smart-TV'))}
@@ -1496,6 +1508,17 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		);
 	};
 
+	const renderThemesView = () => (
+		<ViewContainer className={css.viewContainer} spotlightId='themes-view'>
+			<div className={css.listContent} onFocus={handleListFocus}>
+				<div className={css.listInner}>
+					{renderSectionTitle($L('Theme'))}
+					{renderThemePreviewCards()}
+				</div>
+			</div>
+		</ViewContainer>
+	);
+
 	const renderHomeRowsView = () => (
 		<ViewContainer className={css.viewContainer} spotlightId='homerows-view'>
 			<div className={css.listContent} onFocus={handleListFocus}>
@@ -1603,6 +1626,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 			{currentView.view === 'category' && renderCategoryView()}
 			{currentView.view === 'subcategory' && renderSubcategoryView()}
 			{currentView.view === 'options' && renderOptionsView()}
+			{currentView.view === 'themes' && renderThemesView()}
 			{currentView.view === 'homeRows' && renderHomeRowsView()}
 			{currentView.view === 'libraries' && renderLibrariesView()}
 			<ClearDataDialog

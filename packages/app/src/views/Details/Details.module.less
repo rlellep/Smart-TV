@@ -41,11 +41,11 @@
 	bottom: 0;
 	background: linear-gradient(
 		to bottom,
-		rgba(0, 0, 0, 0.3) 0%,
-		rgba(0, 0, 0, 0.5) 30%,
-		var(--theme-scrim, rgba(0, 0, 0, 0.85)) 60%,
-		rgba(0, 0, 0, 0.95) 80%,
-		rgba(0, 0, 0, 1) 100%
+		rgba(var(--theme-scrim-rgb, 0, 0, 0), 0.3) 0%,
+		rgba(var(--theme-scrim-rgb, 0, 0, 0), 0.5) 30%,
+		rgba(var(--theme-scrim-rgb, 0, 0, 0), 0.85) 60%,
+		rgba(var(--theme-scrim-rgb, 0, 0, 0), 0.95) 80%,
+		rgb(var(--theme-scrim-rgb, 0, 0, 0)) 100%
 	);
 	z-index: 1;
 }
@@ -119,7 +119,7 @@
 	overflow: hidden;
 	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 	position: relative;
-	background: rgba(255, 255, 255, 0.05);
+	background: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.05);
 
 	img {
 		width: 100%;
@@ -156,7 +156,7 @@
 	width: 28px;
 	height: 28px;
 	border-radius: 50%;
-	background: rgba(0, 0, 0, 0.6);
+	background: rgba(var(--theme-scrim-rgb, 0, 0, 0), 0.6);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -241,7 +241,7 @@
 	> .infoItem + .infoItem::before {
 		content: '\2022';
 		margin: 0 10px;
-		color: rgba(255, 255, 255, 0.35);
+		color: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.35);
 		font-size: 12px;
 	}
 }
@@ -636,7 +636,7 @@
 	width: 28px;
 	height: 28px;
 	border-radius: 50%;
-	background: rgba(0, 0, 0, 0.6);
+	background: rgba(var(--theme-scrim-rgb, 0, 0, 0), 0.6);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -1017,7 +1017,7 @@
 
 .seasonDetailCount {
 	font-size: 18px;
-	color: rgba(255, 255, 255, 0.5);
+	color: rgba(var(--theme-on-surface-rgb, 255, 255, 255), 0.5);
 	margin-top: 4px;
 }
 
