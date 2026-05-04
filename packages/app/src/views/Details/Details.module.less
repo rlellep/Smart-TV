@@ -10,7 +10,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: #0a0a0a;
+	background: var(--theme-background, #0a0a0a);
 	z-index: 100;
 	overflow: hidden;
 }
@@ -160,7 +160,7 @@
 	svg {
 		width: 18px;
 		height: 18px;
-		fill: #ff4081;
+		fill: var(--theme-accent, #ff4081);
 	}
 }
 
@@ -295,7 +295,7 @@
 }
 
 .badgeEnded {
-	background: rgba(198, 40, 40, 0.85);
+	background: var(--theme-recording-active, rgba(198, 40, 40, 0.85));
 	color: #fff;
 }
 
@@ -374,18 +374,14 @@
 		.btnAction {
 			background: rgba(255, 255, 255, 0.95);
 			transform: scale(1.1);
-			border-color: #ffffff;
-		}
+				border-color: var(--theme-focus-border-color, #ffffff);
+				color: var(--theme-background, #0a0a0a);
+				fill: var(--theme-background, #0a0a0a);
+			}
 
-		.btnIcon {
-			color: #0a0a0a;
-			fill: #0a0a0a;
-		}
-
-		.favorited {
-			color: #ff4757;
-			fill: #ff4757;
-		}
+			.favorited {
+				color: var(--theme-recording-active, #ff4757);
+				fill: var(--theme-recording-active, #ff4757);
 
 		.watched {
 			color: var(--accent-color, #00a4dc);
@@ -418,8 +414,8 @@
 }
 
 .favorited {
-	color: #ff4757;
-	fill: #ff4757;
+	color: var(--theme-recording-active, #ff4757);
+	fill: var(--theme-recording-active, #ff4757);
 }
 
 .watched {
@@ -569,7 +565,7 @@
 		z-index: 10;
 
 		.seasonPosterWrapper {
-			border-color: #ffffff;
+			border-color: var(--theme-focus-border-color, #ffffff);
 			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 		}
 	}
@@ -639,7 +635,7 @@
 	svg {
 		width: 18px;
 		height: 18px;
-		fill: #ff4081;
+		fill: var(--theme-accent, #ff4081);
 	}
 }
 
@@ -697,7 +693,7 @@
 	width: 300px;
 	height: 100%;
 	flex-shrink: 0;
-	background: #111;
+	background: var(--theme-surface, #111);
 	overflow: hidden;
 
 	img {
@@ -713,11 +709,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: #1a1a1a;
-
-	svg {
-		width: 36px;
-		height: 36px;
+	background: var(--theme-surface, #1a1a1a);
 		color: rgba(255, 255, 255, 0.15);
 	}
 }
@@ -791,7 +783,7 @@
 	position: relative;
 	width: 100%;
 	height: 169px;
-	background: #111;
+	background: var(--theme-surface, #111);
 	overflow: hidden;
 
 	img {
@@ -807,16 +799,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: #1a1a1a;
-
-	svg {
-		width: 40px;
-		height: 40px;
-		color: rgba(255, 255, 255, 0.15);
-	}
-}
-
-.episodeProgress {
+	background: var(--theme-surface, #1a1a1a);
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -876,7 +859,7 @@
 .tmdbIcon {
 	width: 14px;
 	height: 14px;
-	color: #f5c518;
+	color: var(--theme-status-pending, #f5c518);
 	margin-right: 3px;
 }
 
@@ -906,7 +889,7 @@
 	position: relative;
 	width: 100%;
 	height: 158px;
-	background: #111;
+	background: var(--theme-surface, #111);
 	overflow: hidden;
 
 	img {
@@ -923,7 +906,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: #1a1a1a;
+	background: var(--theme-surface, #1a1a1a);
 
 	svg {
 		width: 40px;
@@ -1050,7 +1033,7 @@
 	width: 340px;
 	min-height: 190px;
 	flex-shrink: 0;
-	background: #111;
+	background: var(--theme-surface, #111);
 	overflow: hidden;
 
 	img {
@@ -1066,16 +1049,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: #1a1a1a;
-
-	svg {
-		width: 40px;
-		height: 40px;
-		color: rgba(255, 255, 255, 0.15);
-	}
-}
-
-.seasonEpBody {
+	background: var(--theme-surface, #1a1a1a);
 	flex: 1;
 	padding: 16px 20px 16px 0;
 	display: flex;
@@ -1176,7 +1150,7 @@
 		z-index: 10;
 
 		.castImageWrapper {
-			border-color: #ffffff;
+			border-color: var(--theme-focus-border-color, #ffffff);
 		}
 	}
 }
@@ -1311,7 +1285,7 @@
 }
 
 .mediaInfoMenu {
-	background: #1a1a1a;
+	background: var(--theme-surface, #1a1a1a);
 	border-radius: 16px;
 	padding: 32px;
 	max-width: 700px;

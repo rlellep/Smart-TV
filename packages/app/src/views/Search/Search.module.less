@@ -7,14 +7,14 @@
 	bottom: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
-	background: #0a0a0a;
+	background: var(--theme-background, #0a0a0a);
 	padding-top: 80px;
 }
 
 /* Search Input Section */
 .searchInputSection {
 	padding: 60px 0 30px;
-	background: linear-gradient(to bottom, rgba(10, 10, 10, 0.98) 0%, rgba(10, 10, 10, 0.8) 100%);
+	background: linear-gradient(to bottom, var(--theme-background, rgba(10, 10, 10, 0.98)) 0%, transparent 100%);
 	display: flex;
 	justify-content: center;
 	position: -webkit-sticky;
@@ -28,17 +28,17 @@
 	width: 600px;
 	display: flex;
 	align-items: center;
-	background: rgba(255, 255, 255, 0.1);
-	border: 4px solid rgba(255, 255, 255, 0.2);
+	background: var(--theme-input-background, rgba(255, 255, 255, 0.1));
+	border: 4px solid var(--theme-input-border, rgba(255, 255, 255, 0.2));
 	border-radius: 8px;
 	padding: 10px 16px;
 	transition: all 0.3s ease;
 	height: 50px;
 
 	&:focus-within {
-			border-color: var(--accent-color, #00a4dc);
-		background: rgba(255, 255, 255, 0.15);
-		box-shadow: 0 0 20px rgba(0, 164, 220, 0.3);
+			border-color: var(--theme-focus-border-color, #00a4dc);
+		background: var(--theme-input-focused, rgba(255, 255, 255, 0.15));
+		box-shadow: var(--theme-focus-glow, 0 0 20px rgba(0, 164, 220, 0.3));
 	}
 }
 
@@ -47,7 +47,7 @@
 	height: 24px;
 	margin-right: 12px;
 	opacity: 0.6;
-	color: #ffffff;
+	color: var(--theme-on-surface, #ffffff);
 	fill: currentColor;
 }
 
@@ -56,12 +56,12 @@
 	background: transparent;
 	border: none;
 	outline: none;
-	color: #ffffff;
+	color: var(--theme-on-surface, #ffffff);
 	font-size: 1rem;
 	font-weight: 400;
 
 	input::placeholder {
-		color: rgba(255, 255, 255, 0.5);
+		color: var(--theme-text-muted, rgba(255, 255, 255, 0.5));
 	}
 
 	&:focus {
@@ -72,7 +72,7 @@
 .clearBtn {
 	background: transparent;
 	border: none;
-	color: rgba(255, 255, 255, 0.6);
+	color: var(--theme-text-secondary, rgba(255, 255, 255, 0.6));
 	font-size: 24px;
 	cursor: pointer;
 	padding: 0 8px;
@@ -81,7 +81,7 @@
 
 	&:hover,
 	&:focus {
-		color: #ffffff;
+		color: var(--theme-text-primary, #ffffff);
 		outline: none;
 	}
 }
@@ -143,13 +143,13 @@
 	font-size: 24px;
 	font-weight: 600;
 	margin: 0 0 20px 0;
-	color: #ffffff;
+	color: var(--theme-text-primary, #ffffff);
 }
 
 .rowCount {
 	font-size: 16px;
 	font-weight: 400;
-	color: rgba(255, 255, 255, 0.5);
+	color: var(--theme-text-muted, rgba(255, 255, 255, 0.5));
 }
 
 .rowScroller {
@@ -189,7 +189,7 @@
 		z-index: 10;
 
 		.cardImage {
-			border-color: #ffffff;
+			border-color: var(--theme-focus-border-color, #ffffff);
 			border-width: 4px;
 		}
 	}

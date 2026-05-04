@@ -6,7 +6,7 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: #0a0a0a;
+	background: var(--theme-background, #0a0a0a);
 	overflow: hidden;
 }
 
@@ -75,7 +75,7 @@
 	p {
 		margin-top: 30px;
 		font-size: 28px;
-		color: #b3b3b3;
+		color: var(--theme-text-secondary, #b3b3b3);
 	}
 }
 
@@ -305,7 +305,7 @@
 	transition: background 0.3s ease;
 
 	&.active {
-		background: #ffffff;
+		background: var(--theme-focus-border-color, #ffffff);
 	}
 }
 
@@ -339,7 +339,7 @@
 	
 	p {
 		font-size: 24px;
-		color: #888;
+		color: var(--theme-text-secondary, #888);
 		margin: 0;
 	}
 }
@@ -436,5 +436,5 @@
 	justify-content: center;
 	height: 300px;
 	font-size: 32px;
-	color: #888;
+	color: var(--theme-text-secondary, #888);
 }

@@ -1,6 +1,8 @@
-import {createContext, useContext, useState, useEffect, useCallback, useRef} from 'react';
+import {createContext, useContext, useState, useEffect, useCallback, useMemo, useRef} from 'react';
 import {getFromStorage, saveToStorage} from '../services/storage';
-import {getMoonfinSettings, saveMoonfinProfile, moonfinPing} from '../services/jellyseerrApi';
+import {getMoonfinSettings, getMoonfinThemes, saveMoonfinProfile, moonfinPing} from '../services/jellyseerrApi';
+import {parseThemeSpec} from '../theme/themeSpec';
+import {getAvailableThemeList, getAvailableThemes, isBuiltInThemeId, replaceCustomThemes, resolveThemeById} from '../theme/themeRegistry';
 
 const DEFAULT_HOME_ROWS = [
 	{id: 'resume', name: 'Continue Watching', enabled: true, order: 0},
@@ -33,6 +35,8 @@ const defaultSettings = {
 	skipCredits: false,
 	autoPlay: true,
 	theme: 'dark',
+	visualTheme: 'moonfin',
+	customThemeId: '',
 	homeRows: DEFAULT_HOME_ROWS,
 	showShuffleButton: true,
 	shuffleContentType: 'both',
@@ -43,8 +47,6 @@ const defaultSettings = {
 	showHomeBackdrop: true,
 	backdropBlurHome: 20,
 	backdropBlurDetail: 20,
-	uiOpacity: 85,
-	uiColor: 'gray',
 	serverLogging: false,
 	featuredContentType: 'both',
 	featuredItemCount: 10,
@@ -73,7 +75,6 @@ const defaultSettings = {
 	useSeriesThumbnails: false,
 	homeRowsPosterSize: 'default',
 	homeRowsImageType: 'poster',
-	focusColor: '#00a4dc',
 	nextUpBehavior: 'extended',
 	nextUpTimeout: 7,
 	skipForwardLength: 30,
@@ -105,12 +106,11 @@ const SERVER_TO_LOCAL = {
 	mediaBarTrailerPreview: 'featuredTrailerPreview',
 	enableMultiServerLibraries: 'unifiedLibraryMode',
 	seasonalSurprise: 'seasonalTheme',
-	mediaBarOverlayColor: 'uiColor',
-	mediaBarOpacity: 'uiOpacity',
 	detailsScreenBlur: 'backdropBlurDetail',
 	browsingBlur: 'backdropBlurHome',
 	use24HourClock: 'clockDisplay',
 	homeRowOrder: 'homeRows',
+	theme: 'visualTheme',
 };
 const LOCAL_TO_SERVER = Object.fromEntries(
 	Object.entries(SERVER_TO_LOCAL).map(([s, l]) => [l, s])
@@ -170,7 +170,8 @@ const SYNCABLE_KEYS = [
 	'mdblistEnabled', 'mdblistRatingSources', 'tmdbEpisodeRatingsEnabled',
 	'navbarPosition', 'showFeaturedBar', 'featuredContentType', 'featuredItemCount',
 	'featuredTrailerPreview', 'unifiedLibraryMode', 'seasonalTheme',
-	'uiColor', 'uiOpacity', 'focusColor', 'showRatingLabels',
+	'visualTheme', 'customThemeId',
+	'showRatingLabels',
 	'themeMusicEnabled', 'themeMusicVolume', 'themeMusicOnHomeRows',
 	'homeRowsImageType', 'showClock', 'clockDisplay',
 	'backdropBlurHome', 'backdropBlurDetail',
@@ -234,17 +235,37 @@ const pushTvProfile = (updated, credsRef) => {
 	);
 };
 
+const extractThemeObjects = (payload) => {
+	if (Array.isArray(payload)) return payload;
+	if (payload && typeof payload === 'object') {
+		if (Array.isArray(payload.themes)) return payload.themes;
+		if (Array.isArray(payload.items)) return payload.items;
+		const values = Object.values(payload).filter((entry) => entry && typeof entry === 'object');
+		if (values.length > 0) return values;
+	}
+	return [];
+};
+
 const SettingsContext = createContext(null);
 
 export function SettingsProvider({children}) {
 	const [settings, setSettings] = useState(defaultSettings);
 	const [loaded, setLoaded] = useState(false);
+	const [themeCatalogVersion, setThemeCatalogVersion] = useState(0);
 	const serverCredsRef = useRef(null);
 
 	useEffect(() => {
 		getFromStorage('settings').then((stored) => {
 			if (stored) {
 				let migrated = false;
+				if (!stored.visualTheme) {
+					stored.visualTheme = 'moonfin';
+					migrated = true;
+				}
+				if (typeof stored.customThemeId !== 'string') {
+					stored.customThemeId = '';
+					migrated = true;
+				}
 				if ('skipIntro' in stored) {
 					stored.introAction = stored.skipIntro === true ? 'auto' : 'ask';
 					delete stored.skipIntro;
@@ -262,6 +283,16 @@ export function SettingsProvider({children}) {
 			setLoaded(true);
 		});
 	}, []);
+
+	const availableThemes = useMemo(() => getAvailableThemeList(), [themeCatalogVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+	const activeThemeId = useMemo(() => {
+		const customId = settings.customThemeId;
+		if (customId && getAvailableThemes()[customId]) {
+			return customId;
+		}
+		return isBuiltInThemeId(settings.visualTheme) ? settings.visualTheme : 'moonfin';
+	}, [settings.customThemeId, settings.visualTheme, themeCatalogVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+	const activeTheme = useMemo(() => resolveThemeById(activeThemeId), [activeThemeId, themeCatalogVersion]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const updateSetting = useCallback((key, value) => {
 		setSettings(prev => {
@@ -283,6 +314,18 @@ export function SettingsProvider({children}) {
 		});
 	}, []);
 
+	const selectThemeById = useCallback((themeId) => {
+		setSettings((prev) => {
+			if (!getAvailableThemes()[themeId]) return prev;
+			const updated = isBuiltInThemeId(themeId)
+				? {...prev, visualTheme: themeId, customThemeId: ''}
+				: {...prev, visualTheme: prev.visualTheme || 'moonfin', customThemeId: themeId};
+			saveToStorage('settings', updated);
+			pushTvProfile(updated, serverCredsRef);
+			return updated;
+		});
+	}, []);
+
 	const resetSettings = useCallback(() => {
 		setSettings(defaultSettings);
 		saveToStorage('settings', defaultSettings);
@@ -298,8 +341,37 @@ export function SettingsProvider({children}) {
 				if (ping?.defaultSettings) adminDefaults = ping.defaultSettings;
 			} catch (e) { /* non-critical */ }
 
+			let themesPayload = null;
+			try {
+				themesPayload = await getMoonfinThemes(serverUrl, token);
+			} catch (e) {
+				console.warn('[Settings] Theme sync failed:', e.message);
+			}
+
+			const specs = [];
+			for (const entry of extractThemeObjects(themesPayload)) {
+				if (!entry || typeof entry !== 'object') continue;
+				try {
+					specs.push(parseThemeSpec(entry));
+				} catch (e) {
+					console.warn('[Settings] Ignoring malformed theme entry:', e.message);
+				}
+			}
+			replaceCustomThemes(specs);
+			setThemeCatalogVersion((value) => value + 1);
+
 			const serverData = await getMoonfinSettings(serverUrl, token);
-			if (!serverData) return;
+			if (!serverData) {
+				setSettings((prev) => {
+					if (!prev.customThemeId || getAvailableThemes()[prev.customThemeId]) {
+						return prev;
+					}
+					const updated = {...prev, customThemeId: ''};
+					saveToStorage('settings', updated);
+					return updated;
+				});
+				return;
+			}
 
 			const resolved = resolveFromEnvelope(serverData, adminDefaults);
 
@@ -310,6 +382,12 @@ export function SettingsProvider({children}) {
 				const updated = {...prev};
 				for (const key of SYNCABLE_KEYS) {
 					if (resolved[key] !== undefined) updated[key] = resolved[key];
+				}
+				if (updated.customThemeId && !getAvailableThemes()[updated.customThemeId]) {
+					updated.customThemeId = '';
+				}
+				if (!isBuiltInThemeId(updated.visualTheme)) {
+					updated.visualTheme = 'moonfin';
 				}
 				saveToStorage('settings', updated);
 				return updated;
@@ -324,8 +402,12 @@ export function SettingsProvider({children}) {
 		<SettingsContext.Provider value={{
 			settings,
 			loaded,
+			availableThemes,
+			activeThemeId,
+			activeTheme,
 			updateSetting,
 			updateSettings,
+			selectThemeById,
 			resetSettings,
 			syncFromServer
 		}}>

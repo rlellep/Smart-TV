@@ -10,6 +10,7 @@ import {useSyncPlay} from '../../context/SyncPlayContext';
 import JellyseerrIcon from '../icons/JellyseerrIcon';
 import SyncPlayIcon from '../icons/SyncPlayIcon';
 import SeerrIcon from '../icons/SeerrIcon';
+import {toCssColor} from '../../theme/themeSpec';
 import {KEYS} from '../../utils/keys';
 
 import css from './NavBar.module.less';
@@ -41,7 +42,7 @@ const NavBar = ({
 	onSyncPlay
 }) => {
 	const {user, serverUrl} = useAuth();
-	const {settings} = useSettings();
+	const {settings, activeTheme} = useSettings();
 	const {isEnabled: jellyseerrEnabled, isMoonfin, variant, displayName} = useJellyseerr();
 	const {isInGroup} = useSyncPlay();
 	const [clock, setClock] = useState('');
@@ -80,35 +81,18 @@ const NavBar = ({
 		};
 	}, []);
 
-	const getUiColorRgb = useCallback((colorKey) => {
-		const colorMap = {
-			dark: '40, 40, 40',
-			black: '0, 0, 0',
-			charcoal: '54, 54, 54',
-			slate: '47, 54, 64',
-			navy: '20, 30, 48',
-			midnight: '25, 25, 65',
-			ocean: '20, 50, 70',
-			teal: '0, 60, 60',
-			forest: '25, 50, 35',
-			olive: '50, 50, 25',
-			purple: '48, 25, 52',
-			plum: '60, 30, 60',
-			wine: '60, 20, 30',
-			maroon: '50, 20, 20',
-			brown: '50, 35, 25'
-		};
-		return colorMap[colorKey] || '40, 40, 40';
-	}, []);
-
 	const navPillStyle = useMemo(() => {
-		const rgb = getUiColorRgb(settings.uiColor);
 		return {
-			background: `rgba(${rgb}, ${(settings.uiOpacity || 85) / 100})`,
-			backdropFilter: settings.uiBlur > 0 ? `blur(${settings.uiBlur}px)` : 'none',
-			WebkitBackdropFilter: settings.uiBlur > 0 ? `blur(${settings.uiBlur}px)` : 'none'
+			background: activeTheme.transparentNavbarSurface ? 'transparent' : toCssColor(activeTheme.colors.surface),
+			backdropFilter: 'none',
+			WebkitBackdropFilter: 'none',
+			borderBottom: activeTheme.borders.navBorder
+				? `${activeTheme.borders.navBorder.width}px solid ${toCssColor(activeTheme.borders.navBorder.color)}`
+				: 'none',
+			color: toCssColor(activeTheme.colors.onSurface),
+			textShadow: activeTheme.textGlow.length ? 'var(--theme-text-glow)' : 'none'
 		};
-	}, [settings.uiBlur, settings.uiOpacity, settings.uiColor, getUiColorRgb]);
+	}, [activeTheme]);
 
 	const userAvatarUrl = user?.PrimaryImageTag
 		? `${serverUrl}/Users/${user.Id}/Images/Primary?tag=${user.PrimaryImageTag}&quality=90&maxHeight=100`

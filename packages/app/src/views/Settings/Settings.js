@@ -1,4 +1,4 @@
-import {useCallback, useState, useEffect, useRef} from 'react';
+import {useCallback, useState, useEffect, useMemo, useRef} from 'react';
 import $L from '@enact/i18n/$L';
 import Spottable from '@enact/spotlight/Spottable';
 import SpotlightContainerDecorator from '@enact/spotlight/SpotlightContainerDecorator';
@@ -153,14 +153,6 @@ const getSeekStepOptions = () => [
 	{ value: 30, label: $L('30 seconds') }
 ];
 
-const UI_OPACITY_OPTIONS = [
-	{ value: 50, label: '50%' },
-	{ value: 65, label: '65%' },
-	{ value: 75, label: '75%' },
-	{ value: 85, label: '85%' },
-	{ value: 95, label: '95%' }
-];
-
 const USER_OPACITY_OPTIONS = [
 	{ value: 0, label: '0%' },
 	{ value: 50, label: '50%' },
@@ -168,21 +160,6 @@ const USER_OPACITY_OPTIONS = [
 	{ value: 75, label: '75%' },
 	{ value: 85, label: '85%' },
 	{ value: 95, label: '95%' }
-];
-
-const getUiColorOptions = () => [
-	{ value: 'gray', label: $L('Gray'), rgb: '128, 128, 128' },
-	{ value: 'black', label: $L('Black'), rgb: '0, 0, 0' },
-	{ value: 'dark_blue', label: $L('Dark Blue'), rgb: '26, 35, 50' },
-	{ value: 'purple', label: $L('Purple'), rgb: '74, 20, 140' },
-	{ value: 'teal', label: $L('Teal'), rgb: '0, 105, 92' },
-	{ value: 'navy', label: $L('Navy'), rgb: '13, 27, 42' },
-	{ value: 'charcoal', label: $L('Charcoal'), rgb: '54, 69, 79' },
-	{ value: 'brown', label: $L('Brown'), rgb: '62, 39, 35' },
-	{ value: 'dark_red', label: $L('Dark Red'), rgb: '139, 0, 0' },
-	{ value: 'dark_green', label: $L('Dark Green'), rgb: '11, 79, 15' },
-	{ value: 'slate', label: $L('Slate'), rgb: '71, 85, 105' },
-	{ value: 'indigo', label: $L('Indigo'), rgb: '30, 58, 138' }
 ];
 
 const getScreensaverModeOptions = () => [
@@ -261,19 +238,6 @@ const getUiScaleOptions = () => [
 	{ value: 1.3, label: $L('Maximum') }
 ];
 
-const getFocusColorOptions = () => [
-	{ value: '#00a4dc', label: $L('Blue') },
-	{ value: '#ffffff', label: $L('White') },
-	{ value: '#9b59b6', label: $L('Purple') },
-	{ value: '#1abc9c', label: $L('Teal') },
-	{ value: '#2c3e50', label: $L('Navy') },
-	{ value: '#e74c3c', label: $L('Red') },
-	{ value: '#2ecc71', label: $L('Green') },
-	{ value: '#e67e22', label: $L('Orange') },
-	{ value: '#e91e63', label: $L('Pink') },
-	{ value: '#f1c40f', label: $L('Yellow') }
-];
-
 const getNextUpBehaviorOptions = () => [
 	{ value: 'extended', label: $L('Extended') },
 	{ value: 'minimal', label: $L('Minimal') },
@@ -328,7 +292,7 @@ const renderChevron = () => (
 
 const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 	const { api, serverUrl, accessToken, hasMultipleServers, logoutAll } = useAuth();
-	const { settings, updateSetting, resetSettings } = useSettings();
+	const { settings, updateSetting, resetSettings, availableThemes, activeTheme, activeThemeId, selectThemeById } = useSettings();
 	const { capabilities } = useDeviceInfo();
 	const jellyseerr = useJellyseerr();
 	const isSeerr = jellyseerr.isMoonfin && jellyseerr.variant === 'seerr';
@@ -367,6 +331,10 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 	const [librarySaving, setLibrarySaving] = useState(false);
 	const [serverConfigs, setServerConfigs] = useState([]);
 	const [clearDataDialogOpen, setClearDataDialogOpen] = useState(false);
+	const themeOptions = useMemo(
+		() => availableThemes.map((theme) => ({value: theme.id, label: theme.displayName})),
+		[availableThemes]
+	);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -431,10 +399,15 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 
 	const handleOptionSelect = useCallback(
 		(settingKey, value) => {
+			if (settingKey === '__themeSelection') {
+				selectThemeById(value);
+				popView();
+				return;
+			}
 			updateSetting(settingKey, value);
 			popView();
 		},
-		[updateSetting, popView]
+		[updateSetting, popView, selectThemeById]
 	);
 
 	const handleMoonfinToggle = useCallback(async () => {
@@ -636,6 +609,26 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</SpottableDiv>
 	);
 
+	const renderThemeItem = () => (
+		<SpottableDiv
+			className={css.listItem}
+			onClick={() => pushView({
+				view: 'options',
+				title: $L('Theme'),
+				options: themeOptions,
+				settingKey: '__themeSelection',
+				returnFocusTo: 'setting-appearance-theme'
+			})}
+			spotlightId='setting-appearance-theme'
+		>
+			<div className={css.listItemBody}>
+				<div className={css.listItemHeading}>{$L('Theme')}</div>
+				<div className={css.listItemCaption}>{activeTheme.displayName}</div>
+			</div>
+			<div className={css.listItemTrailing}>{renderChevron()}</div>
+		</SpottableDiv>
+	);
+
 	const renderInfoItem = (id, label, value) => (
 		<SpottableDiv className={css.listItem} spotlightId={`info-${id}`}>
 			<div className={css.listItemBody}>
@@ -673,7 +666,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</div>
 	);
 
-	const renderGeneralApplication = () => (
+	const renderGeneralApplication = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{/* Fallback 'English' is intentionally not wrapped with $L() — it matches the raw stored value, not a translated display string */}
 			{renderOptionItem('uiLanguage', $L('Language'), LANGUAGE_OPTIONS, 'English')}
@@ -691,7 +684,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderGeneralMultiServer = () => (
+	const renderGeneralMultiServer = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderToggleItem(
 				'unifiedLibraryMode',
@@ -701,7 +694,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderGeneralNavbar = () => (
+	const renderGeneralNavbar = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderOptionItem('navbarPosition', $L('Navigation Style'), getNavPositionOptions(), $L('Top Bar'))}
 			{renderToggleItem('showShuffleButton', $L('Show Shuffle Button'), $L('Show shuffle button in navigation bar'))}
@@ -717,7 +710,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderGeneralHomeScreen = () => (
+	const renderGeneralHomeScreen = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderToggleItem(
 				'mergeContinueWatchingNextUp',
@@ -782,7 +775,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderDisplayBackdrop = () => (
+	const renderDisplayBackdrop = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderToggleItem(
 				'showHomeBackdrop',
@@ -794,18 +787,15 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderDisplayUI = () => (
+	const renderDisplayUI = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderOptionItem('uiScale', $L('UI Scale'), getUiScaleOptions(), $L('Default'))}
-			{renderOptionItem('uiOpacity', $L('UI Opacity'), UI_OPACITY_OPTIONS, '85%')}
 			{renderOptionItem('userOpacity', $L('User Avatar Opacity'), USER_OPACITY_OPTIONS, '85%')}
-			{renderOptionItem('uiColor', $L('UI Color'), getUiColorOptions(), $L('Gray'))}
-			{renderOptionItem('focusColor', $L('Focus Color'), getFocusColorOptions(), $L('Blue'))}
 			{renderToggleItem('cardFocusZoom', $L('Card Focus Zoom'), $L('Slightly enlarge cards when focused'))}
 		</>
 	);
 
-	const renderDisplayFeatured = () => (
+	const renderDisplayFeatured = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderToggleItem('showFeaturedBar', $L('Show Featured Bar'), $L('Display the featured media bar on home screen'))}
 			{renderOptionItem('featuredContentType', $L('Content Type'), getContentTypeOptions(), $L('Movies & TV Shows'))}
@@ -821,7 +811,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderPlaybackNextUp = () => (
+	const renderPlaybackNextUp = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderOptionItem('nextUpBehavior', $L('Next Up Behavior'), getNextUpBehaviorOptions(), $L('Extended'))}
 			{settings.nextUpBehavior !== 'disabled' &&
@@ -829,7 +819,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderDisplayThemes = () => (
+	const renderDisplayThemes = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderOptionItem('seasonalTheme', $L('Seasonal Effect'), getSeasonalThemeOptions(), $L('None'))}
 			{renderToggleItem('themeMusicEnabled', $L('Theme Music'), $L('Play background music on detail pages'))}
@@ -844,7 +834,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderDisplayScreensaver = () => (
+	const renderDisplayScreensaver = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderToggleItem(
 				'screensaverEnabled',
@@ -885,8 +875,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 
 	const renderPersonalizationGeneralStyle = () => (
 		<>
-			{renderMissingItem('appearance-theme', $L('Theme'))}
-			{renderOptionItem('focusColor', $L('Focus Border Color'), getFocusColorOptions(), $L('Blue'))}
+			{renderThemeItem()}
 			{renderOptionItem('clockDisplay', $L('Clock Display'), getClockDisplayOptions(), $L('24-Hour'))}
 			{renderMissingItem('24-hour-clock', $L('24-Hour Clock'), $L('Handled via Clock Display on Smart-TV'))}
 			{renderToggleItem('cardFocusZoom', $L('Card Focus Expansion'), $L('Slightly enlarge cards when focused'))}
@@ -903,8 +892,6 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 	const renderPersonalizationNavigation = () => (
 		<>
 			{renderOptionItem('navbarPosition', $L('Navbar Position'), getNavPositionOptions(), $L('Top Bar'))}
-			{renderOptionItem('uiColor', $L('Navbar Color'), getUiColorOptions(), $L('Gray'))}
-			{renderOptionItem('uiOpacity', $L('Navbar Opacity'), UI_OPACITY_OPTIONS, '85%')}
 			{renderToggleItem('showShuffleButton', $L('Shuffle Button'), $L('Show shuffle button in navigation bar'))}
 			{settings.showShuffleButton &&
 				renderOptionItem('shuffleContentType', $L('Shuffle Content Type'), getContentTypeOptions(), $L('Movies & TV Shows'))}
@@ -1067,6 +1054,17 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
+	const renderAboutApp = () => (
+		<>
+			{renderInfoItem('appVersion', $L('App Version'), process.env.REACT_APP_VERSION || '0.0.0')}
+			{renderInfoItem(
+				'platform',
+				$L('Platform'),
+				capabilities?.tizenVersionDisplay ? 'Tizen' : capabilities?.webosVersionDisplay ? 'webOS' : $L('Unknown')
+			)}
+		</>
+	);
+
 	const renderAboutAppInfo = () => (
 		<>
 			{renderAboutApp()}
@@ -1074,7 +1072,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderPluginMoonfin = () => (
+	const renderPluginMoonfin = () => ( // eslint-disable-line no-unused-vars
 		<>
 			<SpottableDiv className={css.listItem} onClick={handleMoonfinToggle} spotlightId='setting-useMoonfinPlugin'>
 				<div className={css.listItemBody}>
@@ -1092,7 +1090,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderPluginStatus = () => {
+	const renderPluginStatus = () => { // eslint-disable-line no-unused-vars
 		const info = jellyseerr.pluginInfo;
 		return (
 			<>
@@ -1104,7 +1102,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		);
 	};
 
-	const renderPluginMDBList = () => (
+	const renderPluginMDBList = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{renderToggleItem('mdblistEnabled', $L('Enable Ratings'), $L('Show MDBList ratings on media details and featured bar'))}
 			{settings.mdblistEnabled &&
@@ -1112,11 +1110,11 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 		</>
 	);
 
-	const renderPluginTMDB = () => (
+	const renderPluginTMDB = () => ( // eslint-disable-line no-unused-vars
 		<>{renderToggleItem('tmdbEpisodeRatingsEnabled', $L('Episode Ratings'), $L('Show TMDB ratings on individual episodes'))}</>
 	);
 
-	const renderPluginSeerr = () => (
+	const renderPluginSeerr = () => ( // eslint-disable-line no-unused-vars
 		<>
 			{jellyseerr.isEnabled && jellyseerr.isAuthenticated && jellyseerr.isMoonfin ? (
 				<>
@@ -1137,17 +1135,6 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 				<div className={css.authHint}>
 					{$L('{seerrLabel} connection is managed through the Moonfin plugin. Log in above if prompted.').replace('{seerrLabel}', seerrLabel)}
 				</div>
-			)}
-		</>
-	);
-
-	const renderAboutApp = () => (
-		<>
-			{renderInfoItem('appVersion', $L('App Version'), process.env.REACT_APP_VERSION || '0.0.0')}
-			{renderInfoItem(
-				'platform',
-				$L('Platform'),
-				capabilities?.tizenVersionDisplay ? 'Tizen' : capabilities?.webosVersionDisplay ? 'webOS' : $L('Unknown')
 			)}
 		</>
 	);
@@ -1433,7 +1420,7 @@ const Settings = ({ onBack, onLibrariesChanged, panelMode }) => {
 
 	const renderOptionsView = () => {
 		const { title, options, settingKey } = currentView;
-		const currentValue = settings[settingKey];
+		const currentValue = settingKey === '__themeSelection' ? activeThemeId : settings[settingKey];
 		return (
 			<ViewContainer className={css.viewContainer} spotlightId='options-view'>
 				<div className={css.listContent} onFocus={handleListFocus}>

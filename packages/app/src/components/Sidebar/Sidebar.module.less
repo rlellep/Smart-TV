@@ -18,7 +18,7 @@
 
 .sidebar.expanded {
 	width: @sidebar-expanded-width;
-	background: linear-gradient(to right, rgba(0, 0, 0, 0.96), rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.55), transparent);
+	background: linear-gradient(to right, rgba(var(--theme-background-rgb, 0, 0, 0), 0.96), rgba(var(--theme-background-rgb, 0, 0, 0), 0.88), rgba(var(--theme-background-rgb, 0, 0, 0), 0.55), transparent);
 }
 
 .userSection {
@@ -45,7 +45,7 @@
 	height: 50px;
 	min-width: 50px;
 	border-radius: 50%;
-	background: linear-gradient(135deg, @accent, #0077b6);
+	background: linear-gradient(135deg, @accent, var(--theme-accent-secondary, #0077b6));
 	display: flex;
 	align-items: center;
 	justify-content: center;
