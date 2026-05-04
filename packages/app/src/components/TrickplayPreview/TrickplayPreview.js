@@ -4,65 +4,60 @@ import * as jellyfinApi from '../../services/jellyfinApi';
 import css from './TrickplayPreview.module.less';
 
 export const getTrickplayManifest = async (itemId, mediaSourceId) => {
-	try {
-		const serverUrl = jellyfinApi.getServerUrl();
-		const apiKey = jellyfinApi.getApiKey();
+    try {
+        const serverUrl = jellyfinApi.getServerUrl();
+        const apiKey = jellyfinApi.getApiKey();
+        const userId = jellyfinApi.getUserId();
 
-		const response = await fetch(
-			`${serverUrl}/Videos/${itemId}/${mediaSourceId}/Trickplay`,
-			{headers: {'X-Emby-Token': apiKey}}
-		);
+        const response = await fetch(
+            `${serverUrl}/Users/${userId}/Items/${itemId}?Fields=Trickplay&api_key=${apiKey}`,
+            {headers: {'X-Emby-Token': apiKey}}
+        );
 
-		if (!response.ok) return null;
+        if (!response.ok) return null;
 
-		const data = await response.json();
-		return data;
-	} catch {
-		return null;
-	}
+        const data = await response.json();
+        return data?.Trickplay?.[mediaSourceId] || null;
+    } catch {
+        return null;
+    }
 };
 
 const calculateSpritePosition = (positionTicks, manifest, selectedWidth) => {
-	if (!manifest || !selectedWidth) return null;
+    if (!manifest || !selectedWidth) return null;
 
-	const trickplayInfo = manifest[selectedWidth];
-	if (!trickplayInfo) return null;
+    const trickplayInfo = manifest[selectedWidth];
+    if (!trickplayInfo) return null;
 
-	const {
-		TileWidth,
-		TileHeight,
-		Width,
-		Height,
-		Interval,
-		ThumbnailCount
-	} = trickplayInfo;
+    const {
+        TileWidth,
+        TileHeight,
+        Width,
+        Height,
+        Interval,
+        ThumbnailCount
+    } = trickplayInfo;
 
-	const positionMs = positionTicks / 10000;
-	const thumbnailIndex = Math.floor(positionMs / Interval);
+    const positionMs = positionTicks / 10000;
+    const thumbnailIndex = Math.floor(positionMs / Interval);
 
-	if (thumbnailIndex < 0 || thumbnailIndex >= ThumbnailCount) {
-		return null;
-	}
+    if (thumbnailIndex < 0 || thumbnailIndex >= ThumbnailCount) return null;
 
-	const tilesPerRow = Math.floor(Width / TileWidth);
-	const tilesPerCol = Math.floor(Height / TileHeight);
-	const tilesPerImage = tilesPerRow * tilesPerCol;
+    const tilesPerImage = TileWidth * TileHeight;
+    const imageIndex = Math.floor(thumbnailIndex / tilesPerImage);
+    const indexInImage = thumbnailIndex % tilesPerImage;
+    const row = Math.floor(indexInImage / TileWidth);
+    const col = indexInImage % TileWidth;
 
-	const imageIndex = Math.floor(thumbnailIndex / tilesPerImage);
-	const indexInImage = thumbnailIndex % tilesPerImage;
-
-	const row = Math.floor(indexInImage / tilesPerRow);
-	const col = indexInImage % tilesPerRow;
-
-	return {
-		imageIndex,
-		x: col * TileWidth,
-		y: row * TileHeight,
-		width: TileWidth,
-		height: TileHeight,
-		spriteWidth: Width,
-		spriteHeight: Height
-	};
+    return {
+        imageIndex,
+        x: col * Width,
+        y: row * Height,
+        width: Width,
+        height: Height,
+        spriteWidth: Width * TileWidth,
+        spriteHeight: Height * TileHeight
+    };
 };
 
 const TrickplayPreview = ({
@@ -106,7 +101,7 @@ const TrickplayPreview = ({
 
 			const serverUrl = jellyfinApi.getServerUrl();
 			const apiKey = jellyfinApi.getApiKey();
-			const imageUrl = `${serverUrl}/Videos/${itemId}/${mediaSourceId}/Trickplay/${selectedWidth}/${newPosition.imageIndex}.jpg?api_key=${apiKey}`;
+			const imageUrl = `${serverUrl}/Videos/${itemId}/Trickplay/${selectedWidth}/${newPosition.imageIndex}.jpg?MediaSourceId=${mediaSourceId}&api_key=${apiKey}`;
 			setCurrentImage(imageUrl);
 		}
 	}, [positionTicks, manifest, selectedWidth, visible, itemId, mediaSourceId]);
