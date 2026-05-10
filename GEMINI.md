@@ -22,6 +22,7 @@ Moonfin is a Jellyfin and Jellyseerr client designed specifically for Smart TVs 
 
 ## Tech Stack
 
+- **Node.js 20+**: LTS version for development and build scripts.
 - **React 18**: Functional components and hooks.
 - **Enact Framework**: Specifically `sandstone` components and `spotlight` for D-pad navigation.
 - **hls.js**: For video playback in the browser environment.
@@ -29,6 +30,10 @@ Moonfin is a Jellyfin and Jellyseerr client designed specifically for Smart TVs 
 - **LESS**: For styling, integrated with Enact's build system.
 
 ## Key Conventions
+
+### Media & Codecs
+- **VC-1 Support**: Explicitly supported on both webOS and Tizen. Ensure `DirectPlayProfiles` and `CodecProfiles` in `deviceProfile.js` include `vc1`, and `video.js` recognizes it as a supported codec.
+- **DTS Handling**: Samsung (Tizen) does NOT support DTS; webOS support is version/model dependent. See `deviceProfile.js` for detailed logic.
 
 ### Components & Views
 - Use functional components with `memo` for performance.

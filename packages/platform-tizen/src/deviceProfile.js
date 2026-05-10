@@ -390,8 +390,8 @@ export const getJellyfinDeviceProfile = async () => {
 	// --- Video codecs per Samsung spec tables ---
 	// Samsung specs officially list VP9/AV1 as WebM-only, but in practice
 	// Samsung TVs' hardware decoders handle VP9/AV1 in MKV containers fine.
-	// This is confirmed by users and matches behavior of other Jellyfin clients.
-	const generalVideoCodecs = ['h264'];
+	// VC-1 is also supported in most containers (MKV, MP4, TS, AVI).
+	const generalVideoCodecs = ['h264', 'vc1'];
 	if (caps.hevc) generalVideoCodecs.push('hevc');
 	if (caps.vp9) generalVideoCodecs.push('vp9');
 	if (caps.av1) generalVideoCodecs.push('av1');
@@ -568,6 +568,24 @@ export const getJellyfinDeviceProfile = async () => {
 					Condition: 'LessThanEqual',
 					Property: 'VideoBitDepth',
 					Value: caps.hdr10 || caps.dolbyVision ? '10' : '8',
+					IsRequired: false
+				}
+			]
+		},
+		{
+			Type: 'Video',
+			Codec: 'vc1',
+			Conditions: [
+				{
+					Condition: 'EqualsAny',
+					Property: 'VideoProfile',
+					Value: 'advanced|main|simple',
+					IsRequired: false
+				},
+				{
+					Condition: 'LessThanEqual',
+					Property: 'VideoLevel',
+					Value: '4',
 					IsRequired: false
 				}
 			]

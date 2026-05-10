@@ -5,6 +5,9 @@
 	"workspaces": [
 		"packages/*"
 	],
+	"engines": {
+		"node": ">=20"
+	},
 	"//build": "Append -- <version> to bump before building (npm run build:webos -- 2.2.0)",
 	"scripts": {
 		"build:webos": "cd packages/build-webos && node build.js",

@@ -148,7 +148,7 @@ Seerr/Jellyseerr integration uses the **Moonfin Jellyfin Plugin** to proxy reque
 ## Building from Source
 
 ### Prerequisites
-- Node.js 18+ and npm 9+
+- Node.js 20+ and npm 10+
 
 ### Quick Start
 

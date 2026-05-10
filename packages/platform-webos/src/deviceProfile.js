@@ -337,8 +337,8 @@ const buildDirectPlayProfiles = (caps) => {
 	});
 
 	if (caps.mkv) {
-		// MKV supports broader video codecs per LG docs: MPEG-2, MPEG-4, H.264, VP8, VP9, HEVC, AV1
-		const mkvVideoCodecs = ['h264', 'mpeg4', 'mpeg2video', 'vp8'];
+		// MKV supports broader video codecs per LG docs: MPEG-2, MPEG-4, H.264, VP8, VP9, HEVC, AV1, VC-1
+		const mkvVideoCodecs = ['h264', 'mpeg4', 'mpeg2video', 'vp8', 'vc1'];
 		if (caps.hevc) mkvVideoCodecs.push('hevc', 'dvh1');
 		if (caps.dolbyVision) mkvVideoCodecs.push('dvhe');
 		if (caps.vp9) mkvVideoCodecs.push('vp9');
@@ -353,8 +353,8 @@ const buildDirectPlayProfiles = (caps) => {
 	}
 
 	if (caps.ts) {
-		// TS per LG docs: H.264, HEVC, MPEG-2; VC-1 is only documented in ASF/WMV
-		const tsVideoCodecs = ['h264'];
+		// TS per LG docs: H.264, HEVC, MPEG-2; VC-1 is also supported by hardware
+		const tsVideoCodecs = ['h264', 'vc1'];
 		if (caps.hevc) tsVideoCodecs.push('hevc', 'dvh1');
 		if (caps.dolbyVision) tsVideoCodecs.push('dvhe');
 		tsVideoCodecs.push('mpeg2video');
@@ -683,6 +683,24 @@ export const getJellyfinDeviceProfile = async () => {
 					Condition: 'LessThanEqual',
 					Property: 'VideoLevel',
 				Value: caps.uhd8K ? '19' : '15',
+					IsRequired: false
+				}
+			]
+		},
+		{
+			Type: 'Video',
+			Codec: 'vc1',
+			Conditions: [
+				{
+					Condition: 'EqualsAny',
+					Property: 'VideoProfile',
+					Value: 'advanced|main|simple',
+					IsRequired: false
+				},
+				{
+					Condition: 'LessThanEqual',
+					Property: 'VideoLevel',
+					Value: '4',
 					IsRequired: false
 				}
 			]
