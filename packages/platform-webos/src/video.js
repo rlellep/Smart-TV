@@ -473,6 +473,13 @@ export const cleanupVideoElement = async (videoElement, options = {}) => {
 
 	try { videoElement.pause(); } catch (e) { /* ignore */ }
 
+	// Explicitly disable any text tracks to avoid "stuck" subtitles
+	if (videoElement.textTracks) {
+		for (let i = 0; i < videoElement.textTracks.length; i++) {
+			videoElement.textTracks[i].mode = 'disabled';
+		}
+	}
+
 	// Remove any <source> children
 	while (videoElement.firstChild) {
 		videoElement.removeChild(videoElement.firstChild);

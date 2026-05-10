@@ -79,9 +79,10 @@ export const getQualityPresets = () => (_qualityPresets ??= [
 
 export const CONTROLS_HIDE_DELAY = 5000;
 
-const MaterialIcon = ({src}) => (
-	<img src={src} alt="" aria-hidden="true" />
-);
+const MaterialIcon = ({src}) => {
+	const url = (src && typeof src === 'object' && 'default' in src) ? src.default : src;
+	return <img src={url} alt="" aria-hidden="true" />;
+};
 
 export const IconPlay = () => (
 	<MaterialIcon src={playArrowIcon} />

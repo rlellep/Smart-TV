@@ -112,7 +112,8 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 	const [lyricsError, setLyricsError] = useState(null);
 	const [shuffleMode, setShuffleMode] = useState(false);
 	const [repeatMode, setRepeatMode] = useState('off');
-	const [isFavorite, setIsFavorite] = useState(false);
+	const [isFavorite, setIsFavorite] = useState(!!item.UserData?.IsFavorite);
+
 	const [zoomMode, setZoomMode] = useState('fit');
 	const [videoAspectRatio, setVideoAspectRatio] = useState(null);
 	const [castMembers, setCastMembers] = useState([]);
@@ -481,6 +482,7 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 	// Load Media & Start AVPlay
 	// ==============================
 	useEffect(() => {
+		const pgsCanvas = pgsCanvasRef.current;
 		const loadMedia = async () => {
 			setIsLoading(true);
 			setError(null);
@@ -625,6 +627,13 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 							setSubtitleTrackEvents(null);
 						}
 					} else if (sub && sub.isImageBased && settings.enablePgsRendering) {
+						if (pgsRendererRef.current) {
+							disposePgsRenderer(pgsRendererRef.current);
+							pgsRendererRef.current = null;
+						}
+						if (pgsCanvasRef.current) {
+							clearPgsCanvas(pgsCanvasRef.current);
+						}
 						try {
 							const renderer = await initPgsCanvasRenderer(pgsCanvasRef.current, sub);
 							if (renderer) {
@@ -827,6 +836,10 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 							useNativeSubtitleRef.current = false;
 							avplaySetSilentSubtitle(true);
 							if (pendingSubAction.stream.isImageBased && settings.enablePgsRendering) {
+								if (pgsRendererRef.current) {
+									disposePgsRenderer(pgsRendererRef.current);
+									pgsRendererRef.current = null;
+								}
 								const renderer = await initPgsCanvasRenderer(pgsCanvasRef.current, pendingSubAction.stream);
 								if (renderer) pgsRendererRef.current = renderer;
 							} else {
@@ -883,6 +896,9 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 			if (pgsRendererRef.current) {
 				disposePgsRenderer(pgsRendererRef.current);
 				pgsRendererRef.current = null;
+			}
+			if (pgsCanvas) {
+				clearPgsCanvas(pgsCanvas);
 			}
 			if (assRendererRef.current) {
 				disposeAssRenderer(assRendererRef.current);
@@ -983,6 +999,23 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 			clearTimeout(controlsTimeoutRef.current);
 		}
 	}, []);
+
+	// Keep HUD visible while user is navigating (reset timer on interaction)
+	useEffect(() => {
+		if (!controlsVisible || activeModal) return;
+
+		const handleInteraction = () => {
+			showControls();
+		};
+
+		document.addEventListener('focusin', handleInteraction);
+		document.addEventListener('keydown', handleInteraction);
+
+		return () => {
+			document.removeEventListener('focusin', handleInteraction);
+			document.removeEventListener('keydown', handleInteraction);
+		};
+	}, [controlsVisible, activeModal, showControls]);
 
 	const onPlayNextWithCleanup = useCallback(async (episode) => {
 		const session = playback.getCurrentSession();
@@ -1090,6 +1123,18 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 			return;
 		}
 
+		if (pgsRendererRef.current) {
+			disposePgsRenderer(pgsRendererRef.current);
+			pgsRendererRef.current = null;
+		}
+		if (pgsCanvasRef.current) {
+			clearPgsCanvas(pgsCanvasRef.current);
+		}
+		if (assRendererRef.current) {
+			disposeAssRenderer(assRendererRef.current);
+			assRendererRef.current = null;
+		}
+
 		cleanupAVPlay();
 		avplayReadyRef.current = false;
 
@@ -1172,6 +1217,19 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 		cancelNextEpisodeCountdown();
 		stopTimeUpdatePolling();
 		await playback.reportStop(positionRef.current);
+
+		if (pgsRendererRef.current) {
+			disposePgsRenderer(pgsRendererRef.current);
+			pgsRendererRef.current = null;
+		}
+		if (pgsCanvasRef.current) {
+			clearPgsCanvas(pgsCanvasRef.current);
+		}
+		if (assRendererRef.current) {
+			disposeAssRenderer(assRendererRef.current);
+			assRendererRef.current = null;
+		}
+
 		cleanupAVPlay();
 		avplayReadyRef.current = false;
 		onBack?.();

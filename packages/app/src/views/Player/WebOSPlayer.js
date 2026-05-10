@@ -80,7 +80,7 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 	const [chapters, setChapters] = useState([]);
 	const [selectedAudioIndex, setSelectedAudioIndex] = useState(null);
 	const [selectedSubtitleIndex, setSelectedSubtitleIndex] = useState(-1);
-	const [subtitleTrackEvents, setSubtitleTrackEvents] = useState(null)
+	const [subtitleTrackEvents, setSubtitleTrackEvents] = useState(null);
 	const [currentSubtitleText, setCurrentSubtitleText] = useState(null);
 	const [subtitleOffset, setSubtitleOffset] = useState(0);
 	const [controlsVisible, setControlsVisible] = useState(false);
@@ -102,7 +102,8 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 	const [, setLyricsError] = useState(null);
 	const [shuffleMode, setShuffleMode] = useState(false);
 	const [repeatMode, setRepeatMode] = useState('off');
-	const [isFavorite, setIsFavorite] = useState(false);
+	const [isFavorite, setIsFavorite] = useState(!!item.UserData?.IsFavorite);
+
 	const [zoomMode, setZoomMode] = useState('fit');
 	const [videoDisplayAspectRatio, setVideoDisplayAspectRatio] = useState(null);
 	const [decodedAspectRatio, setDecodedAspectRatio] = useState(null);
@@ -170,6 +171,7 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 	const pgsRendererRef = useRef(null);
 	const assRendererRef = useRef(null);
 	const pendingInitialAssSubtitleRef = useRef(null);
+	const pendingInitialPgsSubtitleRef = useRef(null);
 
 	const destroyHlsPlayer = () => {
 		if (hlsPlayerRef.current) {
@@ -697,23 +699,29 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 							setSubtitleTrackEvents(null);
 						}
 					} else if (sub && sub.isImageBased && settings.enablePgsRendering) {
-						if (videoRef.current) {
-							try {
-								const renderer = await initPgsRenderer(videoRef.current, sub);
-								if (renderer) {
-									pgsRendererRef.current = renderer;
-									setSubtitleTrackEvents(null);
-								} else {
-									console.error('[Player] PGS renderer returned null');
+						const hasReadyVideoSource = !!(videoRef.current && (videoRef.current.currentSrc || videoRef.current.src));
+						if (!hasReadyVideoSource) {
+							pendingInitialPgsSubtitleRef.current = sub;
+							setSubtitleTrackEvents(null);
+						} else {
+							if (videoRef.current) {
+								try {
+									const renderer = await initPgsRenderer(videoRef.current, sub);
+									if (renderer) {
+										pgsRendererRef.current = renderer;
+										setSubtitleTrackEvents(null);
+									} else {
+										console.error('[Player] PGS renderer returned null');
+										setSubtitleTrackEvents(null);
+									}
+								} catch (err) {
+									console.error('[Player] PGS renderer failed:', err);
 									setSubtitleTrackEvents(null);
 								}
-							} catch (err) {
-								console.error('[Player] PGS renderer failed:', err);
+							} else {
+								console.error('[Player] PGS: videoRef is null');
 								setSubtitleTrackEvents(null);
 							}
-						} else {
-							console.error('[Player] PGS: videoRef is null');
-							setSubtitleTrackEvents(null);
 						}
 					} else {
 						setSubtitleTrackEvents(null);
@@ -809,6 +817,13 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 		return () => {
 			console.log('[Player] Cleanup running - unmounting or re-rendering');
 
+			disposePgsRenderer(pgsRendererRef.current);
+			pgsRendererRef.current = null;
+			disposeAssRenderer(assRendererRef.current);
+			assRendererRef.current = null;
+			pendingInitialAssSubtitleRef.current = null;
+			pendingInitialPgsSubtitleRef.current = null;
+
 			if (isCleaningUpRef.current) {
 				console.log('[Player] Skipping cleanup - already handled by handleBack/handleEnded');
 				playback.stopProgressReporting();
@@ -816,8 +831,6 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 				resetPopups(); // eslint-disable-line no-use-before-define
 				if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
 				if (seekDebounceTimerRef.current) clearTimeout(seekDebounceTimerRef.current);
-				disposePgsRenderer(pgsRendererRef.current);
-				disposeAssRenderer(assRendererRef.current);
 				return;
 			}
 
@@ -1208,6 +1221,23 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 		}
 	}, []);
 
+	// Keep HUD visible while user is navigating (reset timer on interaction)
+	useEffect(() => {
+		if (!controlsVisible || activeModal) return;
+
+		const handleInteraction = () => {
+			showControls();
+		};
+
+		document.addEventListener('focusin', handleInteraction);
+		document.addEventListener('keydown', handleInteraction);
+
+		return () => {
+			document.removeEventListener('focusin', handleInteraction);
+			document.removeEventListener('keydown', handleInteraction);
+		};
+	}, [controlsVisible, activeModal, showControls]);
+
 	// Handle playback health issues - if the health monitor detects stalled
 	// playback (no progress for extended period), fall back to transcoding.
 	const handleUnhealthy = useCallback(async () => {
@@ -1340,6 +1370,18 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 				console.error('[Player] Deferred ASS init failed', err);
 			});
 		}
+
+		const pendingInitialPgsSub = pendingInitialPgsSubtitleRef.current;
+		if (pendingInitialPgsSub && videoRef.current) {
+			pendingInitialPgsSubtitleRef.current = null;
+			initPgsRenderer(videoRef.current, pendingInitialPgsSub).then(renderer => {
+				if (renderer) {
+					pgsRendererRef.current = renderer;
+				}
+			}).catch(err => {
+				console.error('[Player] Deferred PGS init failed', err);
+			});
+		}
 	}, [playMethod, initAssRendererForStream]);
 
 	const handlePlay = useCallback(() => {
@@ -1442,6 +1484,13 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 		}
 
 		isCleaningUpRef.current = true;
+		disposePgsRenderer(pgsRendererRef.current);
+		pgsRendererRef.current = null;
+		disposeAssRenderer(assRendererRef.current);
+		assRendererRef.current = null;
+		pendingInitialAssSubtitleRef.current = null;
+		pendingInitialPgsSubtitleRef.current = null;
+
 		destroyHlsPlayer();
 		await cleanupVideoElement(videoRef.current);
 
@@ -1639,6 +1688,13 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 		await playback.reportStop(currentPos);
 
 		isCleaningUpRef.current = true;
+		disposePgsRenderer(pgsRendererRef.current);
+		pgsRendererRef.current = null;
+		disposeAssRenderer(assRendererRef.current);
+		assRendererRef.current = null;
+		pendingInitialAssSubtitleRef.current = null;
+		pendingInitialPgsSubtitleRef.current = null;
+
 		destroyHlsPlayer();
 		await cleanupVideoElement(videoRef.current);
 
@@ -1745,6 +1801,7 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 		disposeAssRenderer(assRendererRef.current);
 		assRendererRef.current = null;
 		pendingInitialAssSubtitleRef.current = null;
+		pendingInitialPgsSubtitleRef.current = null;
 
 		if (index === -1) {
 			setSelectedSubtitleIndex(-1);

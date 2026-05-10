@@ -271,6 +271,14 @@ const PlayerControls = ({
 				)}
 
 				<div className={css.controlsBottom}>
+					{!isAudioMode && !isLiveTV && topButtons.length > 0 && (
+						<div className={css.videoControlsRow} style={{marginBottom: 20, justifyContent: 'flex-start'}}>
+							<div className={css.transportButtons}>
+								{topButtons.map((btn) => renderControlButton(btn, 'bottom', btn.id === 'playPause' ? 'play-pause-btn' : undefined))}
+							</div>
+						</div>
+					)}
+
 					{isAudioMode && favoriteButton && (
 						<div className={css.audioFavoriteRow}>
 							<div className={css.controlBtnWrapper}>
@@ -328,17 +336,16 @@ const PlayerControls = ({
 					</div>
 					)}
 
-					{!isAudioMode && (topButtons.length > 0 || bottomButtons.length > 0) && (
+					{!isAudioMode && (bottomButtons.length > 0 || (isLiveTV && topButtons.length > 0)) && (
 						<div className={css.videoControlsRow}>
-							{topButtons.length > 0 && (
+							{isLiveTV && topButtons.length > 0 && (
 								<div className={css.transportButtons}>
 									{topButtons.map((btn) => renderControlButton(btn, 'bottom', btn.id === 'playPause' ? 'play-pause-btn' : undefined))}
 								</div>
 							)}
-
 							{bottomButtons.length > 0 && (
 								<div className={css.controlButtonsBottom}>
-						{bottomButtons.map((btn) => renderControlButton(btn, 'bottom'))}
+									{bottomButtons.map((btn) => renderControlButton(btn, 'bottom'))}
 								</div>
 							)}
 						</div>
