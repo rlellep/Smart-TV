@@ -1,6 +1,6 @@
 {
 	"name": "moonfin",
-	"version": "2.4.0",
+	"version": "2.4.1",
 	"private": true,
 	"workspaces": [
 		"packages/*"
@@ -17,6 +17,7 @@
 	},
 	"devDependencies": {
 		"@enact/cli": "^7.2.1",
+		"baseline-browser-mapping": "^2.10.29",
 		"cross-env": "^7.0.3",
 		"eslint-config-enact-proxy": "^1.0.7"
 	},

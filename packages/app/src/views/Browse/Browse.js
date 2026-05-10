@@ -1,4 +1,4 @@
-import {useState, useEffect, useCallback, useRef, useMemo, useReducer} from 'react';
+import {useState, useEffect, useCallback, useRef, useMemo, useReducer, memo} from 'react';
 import Spotlight from '@enact/spotlight';
 import $L from '@enact/i18n/$L';
 import {useAuth} from '../../context/AuthContext';
@@ -16,7 +16,7 @@ import BackdropLayer from './BackdropLayer';
 import css from './Browse.module.less';
 
 const FOCUS_DELAY_MS = 100;
-const TRANSITION_DELAY_MS = 450;
+const TRANSITION_DELAY_MS = 200;
 
 // Cache TTL in milliseconds (5 minutes for volatile data, 30 minutes for libraries)
 const CACHE_TTL_VOLATILE = 5 * 60 * 1000;
@@ -111,6 +111,7 @@ const Browse = ({
 	const {isLoading, browseMode, allRowData, featuredItems} = state;
 	const [focusedItemForBackdrop, setFocusedItemForBackdrop] = useState(null);
 	const [currentFeaturedItem, setCurrentFeaturedItem] = useState(null);
+	const [focusedRowIndex, setFocusedRowIndex] = useState(0);
 	const mainContentRef = useRef(null);
 	const detailSectionRef = useRef(null);
 	const lastFocusedRowRef = useRef(null);
@@ -839,6 +840,7 @@ const Browse = ({
 		}
 		if (typeof rowIndex === 'number') {
 			lastFocusedRowRef.current = rowIndex;
+			setFocusedRowIndex(rowIndex);
 		}
 	}, [browseMode]);
 
@@ -899,24 +901,35 @@ const Browse = ({
 					ref={contentRowsRef}
 					className={`${css.contentRows} ${browseMode === 'rows' ? css.rowsMode : ''}`}
 				>
-					{filteredRows.map((row, index) => (
-						<MediaRow
-							key={row.id}
-							rowId={row.id}
-							title={row.title}
-							items={row.items}
-							serverUrl={serverUrl}
-							cardType={row.type}
-							onSelectItem={handleSelectItem}
-							onFocus={handleRowFocus}
-							onFocusItem={handleFocusItem}
-							rowIndex={index}
-							onNavigateUp={handleNavigateUp}
-							onNavigateDown={handleNavigateDown}
-							showServerBadge={unifiedMode}
-							registerRowRef={registerRowRef}
-						/>
-					))}
+					{filteredRows.map((row, index) => {
+						// Simple virtualization: only render rows within +/- 5 of the focused row.
+						// This significantly reduces DOM size and Spotlight complexity.
+						const isNearFocus = Math.abs(index - focusedRowIndex) <= 5;
+						if (!isNearFocus) {
+							// Return a placeholder with estimated height to maintain scroll position
+							const rowHeight = row.type === 'landscape' ? 335 : 475;
+							return <div key={row.id} style={{height: rowHeight + 'px', marginBottom: '30px'}} />;
+						}
+
+						return (
+							<MediaRow
+								key={row.id}
+								rowId={row.id}
+								title={row.title}
+								items={row.items}
+								serverUrl={serverUrl}
+								cardType={row.type}
+								onSelectItem={handleSelectItem}
+								onFocus={handleRowFocus}
+								onFocusItem={handleFocusItem}
+								rowIndex={index}
+								onNavigateUp={handleNavigateUp}
+								onNavigateDown={handleNavigateDown}
+								showServerBadge={unifiedMode}
+								registerRowRef={registerRowRef}
+							/>
+						);
+					})}
 					{filteredRows.length === 0 && (
 						<div className={css.empty}>{$L('No content found')}</div>
 					)}
@@ -926,4 +939,4 @@ const Browse = ({
 	);
 };
 
-export default Browse;
+export default memo(Browse);

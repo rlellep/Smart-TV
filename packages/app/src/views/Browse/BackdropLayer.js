@@ -1,7 +1,7 @@
 import {useEffect, useRef, memo} from 'react';
 import css from './Browse.module.less';
 
-const BACKDROP_DEBOUNCE_MS = 500;
+const BACKDROP_DEBOUNCE_MS = 700;
 
 const BackdropLayer = memo(({targetUrl, blurAmount}) => {
 	const layerARef = useRef(null);

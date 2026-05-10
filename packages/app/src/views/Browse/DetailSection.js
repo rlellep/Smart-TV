@@ -4,7 +4,7 @@ import RatingsRow from '../../components/RatingsRow';
 import {formatDuration} from '../../utils/helpers';
 import css from './Browse.module.less';
 
-const FOCUS_ITEM_DEBOUNCE_MS = 400;
+const FOCUS_ITEM_DEBOUNCE_MS = 350;
 const DETAIL_GENRES_LIMIT = 2;
 
 const DetailSection = forwardRef(({

@@ -52,12 +52,15 @@ const MediaRow = ({
 				window.cancelAnimationFrame(scrollTimeoutRef.current);
 			}
 			scrollTimeoutRef.current = window.requestAnimationFrame(() => {
-				const cardRect = card.getBoundingClientRect();
-				const scrollerRect = scroller.getBoundingClientRect();
-				if (cardRect.left < scrollerRect.left) {
-					scroller.scrollLeft -= (scrollerRect.left - cardRect.left + 50);
-				} else if (cardRect.right > scrollerRect.right) {
-					scroller.scrollLeft += (cardRect.right - scrollerRect.right + 50);
+				const scrollerWidth = scroller.clientWidth;
+				const scrollLeft = scroller.scrollLeft;
+				const cardLeft = card.offsetLeft;
+				const cardWidth = card.offsetWidth;
+
+				if (cardLeft < scrollLeft) {
+					scroller.scrollLeft = Math.max(0, cardLeft - 60);
+				} else if (cardLeft + cardWidth > scrollLeft + scrollerWidth) {
+					scroller.scrollLeft = cardLeft + cardWidth - scrollerWidth + 60;
 				}
 			});
 		}
@@ -117,11 +120,19 @@ const areRowPropsEqual = (prev, next) => {
 	if (prev.className !== next.className) return false;
 	if (prev.items === next.items) return true;
 	if (prev.items?.length !== next.items?.length) return false;
-	for (let i = 0; i < prev.items.length; i++) {
+
+	// Heuristic: Check first, middle, and last items.
+	// This covers most cases where items are shifted or updated (e.g. Next Up).
+	const len = prev.items.length;
+	const mid = Math.floor(len / 2);
+
+	const itemsToCompare = [0, mid, len - 1];
+	for (const i of itemsToCompare) {
 		if (prev.items[i].Id !== next.items[i].Id) return false;
 		if (prev.items[i].UserData?.PlayedPercentage !== next.items[i].UserData?.PlayedPercentage) return false;
 		if (prev.items[i].UserData?.Played !== next.items[i].UserData?.Played) return false;
 	}
+
 	return true;
 };
 

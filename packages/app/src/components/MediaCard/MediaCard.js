@@ -90,7 +90,7 @@ const MediaCard = ({item, serverUrl, cardType = 'portrait', onSelect, onFocusIte
 		}
 		focusTimeoutRef.current = setTimeout(() => {
 			onFocusItem?.(item);
-		}, 50);
+		}, 100);
 	}, [item, onFocusItem]);
 
 	const progress = item.UserData?.PlayedPercentage || 0;
@@ -121,15 +121,24 @@ const MediaCard = ({item, serverUrl, cardType = 'portrait', onSelect, onFocusIte
 		return null;
 	}, [item.Type, item.AlbumArtist, item.AlbumArtists, item.Artists]);
 
-	const cardClass = `${css.card} ${isLandscape ? css.landscape : isSquare ? css.square : css.portrait}${settings.cardFocusZoom ? '' : ' ' + css.noZoom}`;
+	const cardClass = useMemo(() => {
+		return `${css.card} ${isLandscape ? css.landscape : isSquare ? css.square : css.portrait}${settings.cardFocusZoom ? '' : ' ' + css.noZoom}`;
+	}, [isLandscape, isSquare, settings.cardFocusZoom]);
 
-	const sizeMultiplier = POSTER_SIZE_MULTIPLIERS[settings.homeRowsPosterSize] || 1;
-	const shapeKey = isLandscape ? 'landscape' : isSquare ? 'square' : 'portrait';
-	const [baseW, baseH] = BASE_SIZES[shapeKey];
-	const cardWidth = Math.round(baseW * sizeMultiplier);
-	const cardHeight = Math.round(baseH * sizeMultiplier);
-	const sizeStyle = sizeMultiplier !== 1 ? {width: cardWidth + 'px'} : undefined;
-	const imgSizeStyle = sizeMultiplier !== 1 ? {height: cardHeight + 'px'} : undefined;
+	const cardSize = useMemo(() => {
+		const sizeMultiplier = POSTER_SIZE_MULTIPLIERS[settings.homeRowsPosterSize] || 1;
+		const shapeKey = isLandscape ? 'landscape' : isSquare ? 'square' : 'portrait';
+		const [baseW, baseH] = BASE_SIZES[shapeKey];
+		return {
+			width: Math.round(baseW * sizeMultiplier),
+			height: Math.round(baseH * sizeMultiplier)
+		};
+	}, [isLandscape, isSquare, settings.homeRowsPosterSize]);
+
+	const {width: cardWidth, height: cardHeight} = cardSize;
+
+	const sizeStyle = useMemo(() => cardWidth !== 240 ? {width: cardWidth + 'px'} : undefined, [cardWidth]);
+	const imgSizeStyle = useMemo(() => cardHeight !== 360 ? {height: cardHeight + 'px'} : undefined, [cardHeight]);
 
 	return (
 		<SpottableDiv className={cardClass} onClick={handleClick} onFocus={handleFocus} style={sizeStyle}>
@@ -145,8 +154,9 @@ const MediaCard = ({item, serverUrl, cardType = 'portrait', onSelect, onFocusIte
 						style={imgSizeStyle}
 					/>
 				) : (
-					<div className={css.placeholder} style={imgSizeStyle}>{item.Name?.[0]}</div>
+					<div className={css.placeholder} style={imgSizeStyle}>{item.Name?.[0] || '?'}</div>
 				)}
+...
 
 				{showIndicators && progress > 0 && (
 					<div className={css.progressBar}>

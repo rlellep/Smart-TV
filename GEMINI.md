@@ -2,6 +2,14 @@
 
 Moonfin is a Jellyfin and Jellyseerr client designed specifically for Smart TVs (webOS and Tizen), built using the Enact framework.
 
+### Performance & Responsiveness
+- **Row Virtualization**: The `Browse` view uses a simple virtualization strategy, rendering only rows within a +/- 5 window of the focused row. Off-screen rows are replaced with height-matched placeholders to maintain scroll stability.
+- **CSS Constraints**: Avoid `backdrop-filter` in frequently rendered or moving components (like `MediaCard`), as it is extremely expensive on TV hardware.
+- **D-pad Optimization**: 
+  - Prefer `offsetLeft`/`clientWidth` over `getBoundingClientRect()` for scroll calculations to avoid layout thrashing.
+  - Use focus debouncing (typically 100ms) for high-impact updates like backdrop changes or detail fetching.
+- **Icons**: Player HUD icons are inlined as SVG paths in `PlayerConstants.js` to avoid external file loading issues and ensure zero-latency rendering.
+
 ## Architecture
 
 - **Framework:** React-based Enact framework, utilizing the `sandstone` theme for a TV-native look and feel.
