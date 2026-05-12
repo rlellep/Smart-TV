@@ -10,7 +10,7 @@ const SpottableDiv = Spottable('div');
 const POSTER_SIZE_MULTIPLIERS = {small: 0.8, default: 1, large: 1.2, xlarge: 1.4};
 const BASE_SIZES = {portrait: [240, 360], landscape: [384, 216], square: [240, 240]};
 
-const MediaCard = ({item, serverUrl, cardType = 'portrait', onSelect, onFocusItem, showServerBadge = false, showOverview = false, eagerLoad = false}) => {
+const MediaCard = ({item, serverUrl, cardType = 'portrait', onSelect, onFocusItem, showServerBadge = false, showOverview = false, eagerLoad = false, spotlightId, onSpotlightLeft, onSpotlightRight}) => {
 	const {settings} = useSettings();
 	const isLandscape = cardType === 'landscape';
 	const isSquare = cardType === 'square' || (cardType === 'portrait' && (item.Type === 'MusicAlbum' || item.Type === 'MusicArtist' || item.Type === 'Audio'));
@@ -141,7 +141,7 @@ const MediaCard = ({item, serverUrl, cardType = 'portrait', onSelect, onFocusIte
 	const imgSizeStyle = useMemo(() => cardHeight !== 360 ? {height: cardHeight + 'px'} : undefined, [cardHeight]);
 
 	return (
-		<SpottableDiv className={cardClass} onClick={handleClick} onFocus={handleFocus} style={sizeStyle}>
+		<SpottableDiv className={cardClass} onClick={handleClick} onFocus={handleFocus} style={sizeStyle} spotlightId={spotlightId} onSpotlightLeft={onSpotlightLeft} onSpotlightRight={onSpotlightRight}>
 			<div className={css.imageContainer}>
 				{imageUrl ? (
 					<img
