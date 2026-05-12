@@ -1449,6 +1449,8 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 					}
 				}
 				setCurrentSubtitleText(matchingTexts.length > 0 ? matchingTexts.join('\n') : null);
+			} else {
+				setCurrentSubtitleText(null);
 			}
 
 			checkSegments(ticks);
@@ -1809,6 +1811,8 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 			setCurrentSubtitleText(null);
 		} else {
 			setSelectedSubtitleIndex(index);
+			setSubtitleTrackEvents(null);
+			setCurrentSubtitleText(null);
 			const stream = streamList.find(s => s.index === index);
 
 			if (stream && stream.isAss && supportsAssRenderer()) {

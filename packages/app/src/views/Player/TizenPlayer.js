@@ -306,6 +306,8 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 			setCurrentSubtitleText(null);
 			const assTime = time - (subtitleOffset || 0);
 			setAssTime(assRendererRef.current, Math.max(0, assTime));
+		} else if (!useNativeSubtitleRef.current) {
+			setCurrentSubtitleText(null);
 		}
 
 		checkSegments(ticks); // eslint-disable-line no-use-before-define
@@ -1388,6 +1390,8 @@ const Player = ({item, resume, initialMediaSourceId, initialAudioIndex, initialS
 			avplaySetSilentSubtitle(true);
 		} else {
 			setSelectedSubtitleIndex(index);
+			setSubtitleTrackEvents(null);
+			setCurrentSubtitleText(null);
 			const stream = streamList.find((s) => s.index === index);
 
 			let nativeSuccess = false;
